@@ -1,4 +1,5 @@
 <?php
+$title = '套餐管理';
 include('head.php');
 include('nav.php');
 ?><style>
@@ -27,7 +28,6 @@ include('nav.php');
 		}else{
 			die(json_encode(array("status"=>'error')));
 		}
-		
 	}elseif($_GET['act'] == 'show'){
 		$show = $_POST['show'] == '1' ? "1" : "0";
 		$db = db('app_tc');
@@ -36,38 +36,45 @@ include('nav.php');
 		}else{
 			die(json_encode(array("status"=>'error')));
 		}
-		
 	}else{
  ?>
-<div class="main">
-	<div class="row">
-	<?php 
+            <div class="contents">
+    <div class="container-fluid">
+        <div class="social-dash-wrap">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb-main">
+                        <h4 class="text-capitalize breadcrumb-title"><?= $title ?></h4>
+                    </div>
+                </div>
+                <?php
 		$db = db('app_tc');
 		$list = $db->where(array())->order('id DESC')->select();
 		foreach($list as $vo){
-		
-echo '<div class="col-xs-6 col-sm-3 text-center line-id-'.$vo['id'].'">';
-	echo '<div class="row-col c_active div_shadow">';
-      echo '<h3>'.$vo['name'].'</h3>';
-		echo '<div class="sub">价格：'.$vo["jg"].'元</div>';
-		echo '<div class="sub">流量：'.$vo["rate"].'M</div>';
-		echo '<div class="sub">期限：'.$vo["limit"].'天</div>';
-		echo '<br>';
-		echo '<a type="button" class="btn btn-primary btn-xs" href="km_list.php?tid='.$vo['id'].'">管理/添加卡密</a>&nbsp;';
-		echo '<button type="button" class="btn btn-primary btn-xs" onclick="window.location.href=\'add_tc.php?act=mod&id='.$vo['id'].'\'">编辑</button>&nbsp;';
-		echo '<button type="button" class="btn btn-danger btn-xs" onclick="delLine(\''.$vo['id'].'\')">删除</button>&nbsp;';
-		echo '<a class="btn btn-danger btn-xs" href="'.$vo["url"].'" target="_blank">购买</a>';
-    echo '</div>';
-    echo '</div>';
-		}
-	?>
-   
-</div>
+                        echo '<div class="col-xxl-3 col-sm-6 ">
+                            <div class="card banner-feature">
+                                <div class="card-body">
+                                    <h1 class="banner-feature__heading">' . $vo["name"] . '</h1>
+                                    <p class="banner-feature__para color-gray">价格：' . $vo["jg"] . '元</p>
+                                    <p class="banner-feature__para color-gray">流量：'.$vo["rate"].'M</p>
+                                    <p class="banner-feature__para color-gray">期限：'.$vo["limit"].'天</p>
+                                    <button style="display:inline" class="banner-feature__btn btn btn-outline-info btn-sm px-20 radius-xs fs-14" type="button" onclick="window.location.href=\'km_list.php?tid='.$vo['id'].'\'">管理/添加卡密</button>
+                                    <button style="display:inline" class="banner-feature__btn btn btn-outline-primary btn-sm px-20 radius-xs fs-14" type="button" onclick="window.location.href=\'add_tc.php?act=mod&id='.$vo['id'].'\'">编辑</button>
+                                    <button style="display:inline" class="banner-feature__btn btn btn-outline-danger btn-sm px-20 radius-xs fs-14" type="button" onclick="delLine(\''.$vo['id'].'\')">删除</button>
+                                    <button style="display:inline" class="banner-feature__btn btn btn-outline-warning btn-sm px-20 radius-xs fs-14" type="button" onclick="window.location.href=\''.$vo["url"].'\'">购买</button>
+                                ';
+                        echo '</div>
+              </div>
+              </div>';
+                    }
+                ?>
+            </div>
+        </div>
+    </div>
 </div>
 <?php
 	}
 	include('footer.php');
-	
 ?>
 <script>
 function qiyong(id){
@@ -99,7 +106,6 @@ function delLine(id){
 		};
 		$.post(url,data,function(data){
 			if(data.status == "success"){
-
 			}else{
 				alert("删除失败");
 			}

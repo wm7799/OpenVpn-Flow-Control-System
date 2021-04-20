@@ -7,24 +7,19 @@ $admin = db("app_admin")->where(array("username"=>$_SESSION["dd"]["username"],"p
 				die(json_encode($status));
 				exit;
 			}
-		
 		}
 $act = $_GET['my'];
 switch($act){
-
 	case "addll" :
 		$nums = $_POST['n'];
-
 		$db = db(_openvpn_);
 		$info = $db->where(["id"=>$_POST['user']])->find();
 		$addll = $nums*1024*1024*1024;
-		
 			$update["maxll"] = $addll;
 			$update["endtime"] = time()+30*24*60*60;
 			$update["isent"] = "0";
 			$update["irecv"] = "0";
 			$update["i"] = "1";
-	
 		if($db->where(['id'=>$_POST['user']])->update($update)){
 			$status['status'] = "success";
 			die(json_encode($status));
@@ -35,10 +30,8 @@ switch($act){
 	break;
 	case "addllAll" :
 		$nums = $_POST['n'];
-
 		$db = db(_openvpn_);
-		$addll = $nums*1024*1024*1024;	
-
+		$addll = $nums*1024*1024*1024;
 		if($db->update("maxll = maxll+".$addll)){
 			$status['status'] = "success";
 			die(json_encode($status));
@@ -47,7 +40,6 @@ switch($act){
 			die(json_encode($status));
 		}
 	break;
-	
 	case "addtimeAll" :
 		$nums = $_POST['n'];
 		$db = db(_openvpn_);
@@ -60,7 +52,6 @@ switch($act){
 			die(json_encode($status));
 		}
 	break;
-	
 	case "deljy" :
 		$db = db(_openvpn_);
 		if($db->where(["i"=>0])->delete()){
@@ -94,6 +85,5 @@ switch($act){
 		echo htmlspecialchars_decode($content,ENT_QUOTES);
 	break;
 		case "lock_line":
-			
 		break;
 }

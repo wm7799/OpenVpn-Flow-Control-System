@@ -22,7 +22,7 @@ if($_GET['act'] == 'save'){
 			$n++;
 		};
 	}
-	file_put_contents("lastkm/kmdata.php",'<?php'."\n".implode("\n",$kms));
+	file_put_contents("kmdata.php",'<?php'."\n".implode("\n",$kms));
 	die(json_encode(array("status"=>'success')));
 
 }elseif($_GET['act'] == 'del'){
@@ -167,7 +167,7 @@ if($_GET['act'] == 'save'){
 			},function(data){
 				if(data.status == "success"){
 					 $('#setting').click();
-					 window.location.href="lastkm/index.php";
+					 window.location.href="km_his.php";
 				}else{
 					alert(data.msg);
 				}
@@ -412,7 +412,7 @@ echo create_page_html($numrows,$_GET["page"],30,"&tid=".$_GET["tid"]);
 			},function(data){
 				if(data.status == "success"){
 					 $('#setting').click();
-					 window.location.href="lastkm/index.php";
+					 window.location.href="km_his.php";
 				}else{
 					alert(data.msg);
 				}

@@ -143,7 +143,7 @@ text-decoration:none;
 		<div class="sile" >
 		<div class="admin-logo">
 		<div class="nav-left hidden-xs">
-			<img src="logo.png">
+			<img style="width: 100px;height: 20px;" src="logo.png">
 		</div>
 		<div class="nav-left icon-reorders">
 			<i class="icon-reorder shows" style="color:#fff" ></i>	
@@ -215,9 +215,6 @@ $section[] =	["name"=>"密码修改","item"=>"user.php","icon"=>"icon-wrench"];
 		<div class="nav-right">
 			<a href="login.php?act=logout">退出账号</a>
 		</div>
-	</div>
-	<div class="main-gg">
-		<i class="icon-volume-up"></i><span class="gg"><a href="#">流量卫士流控</a></span>
 	</div>
 	<div class="content-in">
 <script>

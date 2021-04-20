@@ -140,7 +140,7 @@ $(function(){
 		   if(nums == ""){
 			   alert("请输入端口号");
 		   } 
-		   $.post('fas_service.php',{
+		   $.post('kangml_service.php',{
 			   "cmd":'/var/www/html/admin/lib/addport.sh tcp '+nums
 			  
 			},function(data){
@@ -158,7 +158,7 @@ $(function(){
 		   if(nums == ""){
 			   alert("请输入端口号");
 		   } 
-		   $.post('fas_service.php',{
+		   $.post('kangml_service.php',{
 			   "cmd":'/var/www/html/admin/lib/modWebPort.sh '+nums
 			  
 			},function(data){
@@ -178,7 +178,7 @@ $(function(){
 	});
 function cmds(line){
 	if(confirm("确认执行此命令？部分命令执行后可能没有结果反馈")){
-		$.post('fas_service.php',{
+		$.post('kangml_service.php',{
 			  "cmd":line  
 		},function(data){
 			if(data.status == "success"){

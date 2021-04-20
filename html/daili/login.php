@@ -11,7 +11,7 @@ if(ACT == "logout"){
 <html lang="cn" class="bg-dark">
 <head>
 <meta charset="utf-8" />
-<title>登录到系统</title>
+<title>代理控制中心</title>
 <meta name="description" content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <link rel="stylesheet" href="/css/app.v2.css" type="text/css" />
@@ -44,7 +44,7 @@ if(isset($_POST["user"]) && isset($_POST["pass"])){
 
 ?>
 <section id="content" class="m-t-lg wrapper-md animated fadeInUp">
-  <div class="container aside-xxl"> <a class="navbar-brand block" href="admin.php">叮咚云控系统登录页面</a>
+  <div class="container aside-xxl"> <a class="navbar-brand block" href="admin.php">代理登录页面</a>
     <section class="panel panel-default bg-white m-t-lg">
       <header class="panel-heading text-center"> <strong>登录</strong> </header>
 	   <form action="./login.php" method="POST" class="panel-body wrapper-lg" role="form">
@@ -72,14 +72,7 @@ if(isset($_POST["user"]) && isset($_POST["pass"])){
     </section>
   </div>
 </section>
-<!-- footer -->
-<footer id="footer">
-  <div class="text-center padder">
-    <p> <small>筑梦科技版权所有<br>
-      &copy; 2016</small> </p>
-  </div>
-</footer>
-<!-- / footer --> <script src="js/app.v2.js"></script> <!-- Bootstrap --> <!-- App -->
+<script src="js/app.v2.js"></script> <!-- Bootstrap --> <!-- App -->
 </body>
 </html>
 <?php 

@@ -1,154 +1,482 @@
-<div class="sile" >
-		<div class="admin-logo  hidden-xs">
-		<div class="nav-left hidden-xs">
-			<img src="/admin/logo.png" class="admin-logo" style="margin-top:0px;width:130px;">
-		</div>
-		</div>	<div class="nav-left icon-reorders">
-			<i class="icon-reorder shows" style="color:#fff;margin-left:15px;" ></i>	
-		</div>
 <?php
-
-$dir = dirname(__FILE__);
-$admindir = str_replace(str_replace('\\','/',R),"",str_replace('\\','/',$dir))."/";
-define("ADMINDIR",$admindir);
-
-
-function checkIfActive($string) {
-	if(is_array($string)){
-		$array = $string[0];
-	}else{
-		$array=explode(',',$string);
-	}
-	$php_self=str_replace(ADMINDIR,'', $_SERVER['PHP_SELF']);
-	$php_self=str_replace('.php','',$php_self);
-	if (in_array($php_self,$array)){
-		return $string[1][$php_self] ;
-	}
-	return false;
+function echoActive($str){
+    $url=$_SERVER['REQUEST_URI'];
+    echo $url == '/admin/'.$str ? 'active' : '';
 }
-
-$section[] =	["name"=>"整体概览","item"=>"admin.php","icon"=>"icon-dashboard"];
-$section[] =	["name"=>"用户管理","item"=>[
-					["name"=>"账号批量生成","item"=>"user_create.php","icon"=>""],
-					["name"=>"上次生成","item"=>"lastkm/user.php","icon"=>""],
-					["name"=>"新增用户","item"=>"user_add.php","icon"=>""],
-					["name"=>"用户列表","item"=>"user_list.php","icon"=>""],
-					["name"=>"在线用户","item"=>"online.php","icon"=>""]
-				],"icon"=>"icon-user"];
-$section[] =	["name"=>"线路管理","item"=>[
-					["name"=>"证书管理","item"=>"zs.php","icon"=>""],
-					["name"=>"线路列表","item"=>"line_list.php","icon"=>""],
-					["name"=>"新增线路","item"=>"line_add.php","icon"=>""],
-					["name"=>"分类管理","item"=>"cat_add.php","icon"=>""]
-				],"icon"=>"icon-reorder"];
-$section[] =	["name"=>"套餐管理","item"=>[
-					["name"=>"套餐管理","item"=>"list_tc.php","icon"=>""],
-					["name"=>"新增套餐","item"=>"add_tc.php","icon"=>""],
-					["name"=>"卡密管理","item"=>"km_list.php","icon"=>""],
-					["name"=>"上次生成","item"=>"lastkm/index.php","icon"=>""]
-				],"icon"=>"icon-shopping-cart"];
-		
-$section[] =	["name"=>"负载管理","item"=>[
-					["name"=>"宽带监控","item"=>"net.php","icon"=>""],
-					["name"=>"添加节点","item"=>"note_add.php","icon"=>""],
-					["name"=>"节点管理","item"=>"note_list.php","icon"=>""],
-					["name"=>"添加服务器","item"=>"fwq_add.php","icon"=>""],
-					["name"=>"服务器列表","item"=>"fwq_list.php","icon"=>""]
-				],"icon"=>"icon-sitemap"];
-$section[] =	["name"=>"消息管理","item"=>[
-					["name"=>"反馈管理","item"=>"feedback.php","icon"=>""],
-					["name"=>"公告管理","item"=>"list_gg.php","icon"=>""],
-					["name"=>"发布公告","item"=>"add_gg.php","icon"=>""]					
-				],"icon"=>"icon-comment"];
-$section[] =	["name"=>"APP管理","item"=>[
-					["name"=>"APP生成","item"=>"create_app.php","icon"=>""],
-					["name"=>"APP设置","item"=>"qq_admin.php","icon"=>""],
-					["name"=>"升级与推送","item"=>"AdminShengji.php","icon"=>""]
-				],"icon"=>"icon-group"];
-$section[] =	["name"=>"代理管理","item"=>[
-					["name"=>"新增等级","item"=>"type_add.php","icon"=>""],
-					["name"=>"等级列表","item"=>"type_list.php","icon"=>""],
-					["name"=>"新增代理","item"=>"dl_add.php","icon"=>""],
-					["name"=>"代理列表","item"=>"dl_list.php","icon"=>""]
-				],"icon"=>"icon-tags"];
-$section[] =	["name"=>"交易管理","item"=>[
-					["name"=>"收支管理","item"=>"pay_user.php","icon"=>""],
-					["name"=>"商品管理","item"=>"goods.php","icon"=>""],
-					["name"=>"参数配置","item"=>"pay.php","icon"=>""]
-				],"icon"=>"icon-shopping-cart"];
-
-$section[] =	["name"=>"安全管理","item"=>[
-					["name"=>"数据备份","item"=>"mysql.php","icon"=>""],
-					["name"=>"DNS拦截","item"=>"hosts.php","icon"=>""],
-					["name"=>"密码修改","item"=>"user.php","icon"=>""],
-				],"icon"=>"icon-lock"];
-$section[] =	["name"=>"高级设置","item"=>[
-					["name"=>"高级管理","item"=>"safe.php","icon"=>""],
-					["name"=>"限速管理","item"=>"float.php","icon"=>""]
-				],"icon"=>"icon-wrench"];
-
-	echo '<ul class="section">';
-	
-	$nav_name = "";
-	foreach($section as $item){
-		$s = explode(".",$item["item"]);
-		$f[0][] = $s[0];
-		$f[1][$s[0]] = $item["name"];
-		if(is_array($item["item"])){
-			foreach($item["item"] as $vo){
-				$s = explode(".",$vo["item"]);
-				$f[0][] = $s[0];
-				$f[1][$s[0]] = $vo["name"];
-			}
-		}
-		$active = "";
-		if($isact = checkIfActive($f))
-		{	
-			$nav_name = $isact;
-			$active = "active";
-		}
-		echo '<li class="item '.$active.'">';
-		$f = [];
-		if(is_array($item["item"])){
-			echo '<a href="javascript:void(0)" class="onclick-item"><i class="icon '.$item["icon"].' nav-icon"> </i>'.$item["name"].'<i class="angle icon-angle-right"></i></a>';
-			echo '<ul class="section-sub">';
-			foreach($item["item"] as $vo){
-				echo '<li><a href="'.$admindir.$vo["item"].'" class="nav-item">'.$vo["name"].'</a></li>';
-			}
-			echo '</ul>';
-		}else{
-			echo '<a href="'.$admindir.$item["item"].'" class="nav-item"><i class="icon '.$item["icon"].' nav-icon"> </i>'.$item["name"].'</a>';
-		}
-		echo '</li>';
-	}
-	echo '</ul>';
+function echoActiveMore(...$args){
+    $url=$_SERVER['REQUEST_URI'];
+    foreach ($args as $value){
+        echo $url == '/admin/'.$value ? 'active' : '';
+    }
+}
+function echoOpenMore(...$args){
+    $url=$_SERVER['REQUEST_URI'];
+    foreach ($args as $value){
+        echo $url == '/admin/'.$value ? 'open' : '';
+    }
+}
 ?>
-</div>
-<div class="content-box">
-	<div class="main-top-box">
-		<div class="main-top">
-			<div>
-				<div class="nav-left icon-reorders">
-					<i class="icon-reorder shows" style="color:#fff;" ></i>	
-				</div>
-				<div class="text-center top-tips"><i class="icon-volume-up  hidden-xs"></i>&nbsp;&nbsp;<span></span></div>
-				<div class="nav-right hidden-xs">
-					<a href="http://wpa.qq.com/msgrd?v=3&uin=763687933&site=qq&menu=yes" target="_blank" class="btn btn-info"><i class="icon icon-comment nav-icon"></i>&nbsp;&nbsp;联系小乐</a>
-					<a href="http://blog.xiaole888.cn" target="_blank" class="btn btn-info"><i class="icon icon-user nav-icon"></i>&nbsp;&nbsp;小乐博客</a>
-					<a href="mysql.php" class="btn btn-info"><i class="icon-hdd"></i>&nbsp;&nbsp;数据备份</a>
-					<a href="line_list.php" class="btn btn-info"><i class="icon-reorder"></i>&nbsp;&nbsp;线路管理</a>
-					<a href="login.php?act=logout" class="btn btn-success"><i class="icon-signout"></i>&nbsp;&nbsp;退出账号</a>
-				</div>
-				<div style="clear:both"></div>
-				<div class="gonggao"><p>公告测试</p>
-				<div class="text-right">
-					点击以后此公告不再提醒&nbsp;>>&nbsp;&nbsp;&nbsp;<button href="login.php?act=logout" class="btn btn-default btn-sm gonggao-ok">我知道了</button>
-				</div></div>
-				
-			</div>
-		</div>
-	</div>
-	<div class="content-in">
-	<div class="box-title">
-		<i class="icon-dashboard"></i>&nbsp;控制台首页&nbsp;&nbsp;<i class=" icon-angle-right"></i>&nbsp;&nbsp;<?=$nav_name?>
-	</div>
+<body class="layout-light side-menu">
+    <div class="mobile-search"></div>
+
+    <div class="mobile-author-actions"></div>
+    <header class="header-top">
+        <nav class="navbar navbar-light">
+            <div class="navbar-left">
+                <a href="" class="sidebar-toggle">
+                    <img class="svg" src="img/svg/bars.svg" alt="img"></a>
+                <a class="navbar-brand" href="#"><img class="svg dark" src="img/logo_Dark.png" alt=""><img class="light"
+                        src="img/Logo_white.png" alt=""></a>
+            </div>
+            <!-- ends: navbar-left -->
+
+            <div class="navbar-right">
+                <ul class="navbar-right__menu">
+                    <li class="nav-search d-none">
+                        <a href="#" class="search-toggle">
+                            <i class="la la-search"></i>
+                            <i class="la la-times"></i>
+                        </a>
+                        <form action="/" class="search-form-topMenu">
+                            <span class="search-icon" data-feather="search"></span>
+                            <input class="form-control mr-sm-2 box-shadow-none" type="search" placeholder="Se11arch..."
+                                aria-label="Search">
+                        </form>
+                    </li>
+                    <li class="nav-notification">
+                        <div class="dropdown-custom">
+                            <a href="javascript:;" class="nav-item-toggle">
+                                <span data-feather="bell"></span></a>
+                            <div class="dropdown-wrapper">
+                                <h2 class="dropdown-wrapper__title">消息 <span
+                                        class="badge-circle badge-warning ml-1 msg-num">3</span></h2>
+                                <ul class="msg-ul">
+<!--                                    <li class="nav-notification__single nav-notification__single d-flex flex-wrap">-->
+<!--                                        <div class="nav-notification__type nav-notification__type--info">-->
+<!--                                            <span data-feather="at-sign"></span>-->
+<!--                                        </div>-->
+<!--                                        <div class="nav-notification__details">-->
+<!--                                            <p>-->
+<!--                                                <a href="" class="subject stretched-link text-truncate"-->
+<!--                                                    style="max-width: 180px;">James</a>-->
+<!--                                                <span>sent you a message</span>-->
+<!--                                            </p>-->
+<!--                                            <p>-->
+<!--                                                <span class="time-posted">5 hours ago</span>-->
+<!--                                            </p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- ends: .nav-notification -->
+<!--                    <li class="nav-settings">-->
+<!--                        <div class="dropdown-custom">-->
+<!--                            <a href="javascript:;" class="nav-item-toggle">-->
+<!--                                <span data-feather="settings"></span></a>-->
+<!--                            <div class="dropdown-wrapper dropdown-wrapper--large">-->
+<!--                                <ul class="list-settings">-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/mail.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">All Features</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>Introducing Increment subscriptions </p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/color-palette.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">Themes</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>Third party themes that are compatible</p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/home.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">Payments</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>We handle billions of dollars</p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/video-camera.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">Design Mockups</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>Share planning visuals with clients</p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/document.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">Content Planner</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>Centralize content gethering and editing</p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                    <li class="d-flex">-->
+<!--                                        <div class="mr-3"><img src="img/microphone.png" alt=""></div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <h6>-->
+<!--                                                <a href="" class="stretched-link">Diagram Maker</a>-->
+<!--                                            </h6>-->
+<!--                                            <p>Plan user flows & test scenarios</p>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+<!--                                </ul>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </li>-->
+                    <!-- ends: .nav-settings -->
+                    <li class="nav-support">
+                        <div class="dropdown-custom">
+                            <a href="javascript:;" class="nav-item-toggle">
+                                <span data-feather="help-circle"></span></a>
+                            <div class="dropdown-wrapper">
+                                <div class="list-group">
+                                    <span>使用说明</span>
+                                    <ul>
+                                        <li>
+                                            <a href="">如何快速开始</a>
+                                        </li>
+                                        <li>
+                                            <a href="">如何添加服务器</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="list-group">
+                                    <span>更多说明</span>
+                                    <ul>
+                                        <li>
+                                            <a href="">前往康师傅博客</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- ends: .nav-support -->
+                    <li class="nav-author">
+                        <div class="dropdown-custom">
+                            <a href="javascript:;" class="nav-item-toggle"><img src="img/author-nav.jpg" alt=""
+                                    class="rounded-circle"></a>
+                            <div class="dropdown-wrapper">
+                                <div class="nav-author__info">
+                                    <div class="author-img">
+                                        <img src="img/author-nav.jpg" alt="" class="rounded-circle">
+                                    </div>
+                                    <div>
+                                        <h6>欢迎您</h6>
+                                        <span>后台管理员</span>
+                                    </div>
+                                </div>
+                                <div class="nav-author__options">
+                                    <ul>
+<!--                                        <li>-->
+<!--                                            <a href="">-->
+<!--                                                <span data-feather="user"></span> Profile</a>-->
+<!--                                        </li>-->
+<!--                                        <li>-->
+<!--                                            <a href="">-->
+<!--                                                <span data-feather="settings"></span> Settings</a>-->
+<!--                                        </li>-->
+                                        <li>
+                                            <a href="user.php">
+                                                <span data-feather="key"></span> 修改密码</a>
+                                        </li>
+<!--                                        <li>-->
+<!--                                            <a href="">-->
+<!--                                                <span data-feather="users"></span> Activity</a>-->
+<!--                                        </li>-->
+<!--                                        <li>-->
+<!--                                            <a href="">-->
+<!--                                                <span data-feather="bell"></span> Help</a>-->
+<!--                                        </li>-->
+                                    </ul>
+                                    <a href="login.php?act=logout" class="nav-author__signout">
+                                        <span data-feather="log-out"></span> 登出</a>
+                                </div>
+                            </div>
+                            <!-- ends: .dropdown-wrapper -->
+                        </div>
+                    </li>
+                    <!-- ends: .nav-author -->
+                </ul>
+                <!-- ends: .navbar-right__menu -->
+                <div class="navbar-right__mobileAction d-md-none">
+                    <a href="#" class="btn-author-action">
+                        <span data-feather="more-vertical"></span></a>
+                </div>
+            </div>
+            <!-- ends: .navbar-right -->
+        </nav>
+    </header>
+	<main class="main-content">
+
+        <aside class="sidebar">
+            <div class="sidebar__menu-group">
+                <ul class="sidebar_nav">
+                    <li class="menu-title">
+                        <span>欢迎使用</span>
+                    </li>
+                    <li>
+                        <a href="admin.php" class="<?php echoActive('admin.php');?>">
+                            <span data-feather="home" class="nav-icon"></span>
+                            <span class="menu-text">仪表盘</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="update.php" class="<?php echoActive('changelog.html');?>">
+                            <span data-feather="activity" class="nav-icon"></span>
+                            <span class="menu-text">更新记录</span>
+                            <span class="badge badge-primary menuItem">3.0.0</span>
+                        </a>
+                    </li>
+                    <li class="menu-title m-top-30">
+                        <span>功能区</span>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("user_add.php","user_list.php","user_his.php","online.php","user_setting.php");?>">
+                        <a href="#" class="<?php echoActiveMore("user_add.php","user_list.php","user_his.php","online.php","user_setting.php");?>">
+                            <span data-feather="user" class="nav-icon"></span>
+                            <span class="menu-text">用户</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a class="<?php echoActive('user_add.php');?>" href="user_add.php">生成用户</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('user_list.php');?>" href="user_list.php">用户列表</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('user_his.php');?>" href="user_his.php">上次生成</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('online.php');?>" href="online.php">在线用户</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('user_setting.php');?>" href="user_setting.php">用户配置</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("dl_add.php","dl_list.php","type_add.php","type_list.php","dl_tx.php");?>">
+                        <a href="#" class="<?php echoActiveMore("dl_add.php","dl_list.php","type_add.php","type_list.php","dl_tx.php");?>">
+                            <span data-feather="user-check" class="nav-icon"></span>
+                            <span class="menu-text">代理</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="dl_add.php" class="<?php echoActive('dl_add.php');?>">添加代理</a>
+                            </li>
+                            <li>
+                                <a href="dl_list.php" class="<?php echoActive('dl_list.php');?>">代理列表</a>
+                            </li>
+                            <li>
+                                <a href="type_add.php" class="<?php echoActive('type_add.php');?>">新增等级</a>
+                            </li>
+                            <li>
+                                <a href="type_list.php" class="<?php echoActive('type_list.php');?>">等级列表</a>
+                            </li>
+                            <li>
+                                <a href="dl_tx.html" class="<?php echoActive('dl_tx.php');?>">代理提现审核</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("add_tc.php","list_tc.php","km_list.php","km_his.php","pay_order.php","pay.php");?>">
+                        <a href="#" class="<?php echoActiveMore("add_tc.php","list_tc.php","km_list.php","km_his.php","pay_order.php","pay.php");?>">
+                            <span data-feather="shopping-cart" class="nav-icon"></span>
+                            <span class="menu-text">销售</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="add_tc.php" class="<?php echoActive('add_tc.php');?>">添加套餐</a>
+                            </li>
+                            <li>
+                                <a href="list_tc.php" class="<?php echoActive('list_tc.php');?>">套餐管理</a>
+                            </li>
+                            <li>
+                                <a href="km_list.php" class="<?php echoActive('km_list.php');?>">卡密管理</a>
+                            </li>
+                            <li>
+                                <a href="km_his.php" class="<?php echoActive('km_his.php');?>">上次生成卡密</a>
+                            </li>
+                            <li>
+                                <a href="pay_order.php" class="<?php echoActive('pay_order.php');?>">支付订单记录</a>
+                            </li>
+                            <li>
+                                <a href="pay.php" class="<?php echoActive('pay.php');?>">支付接口配置</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("line_add.php","line_list.php","cat_add.php","line_daili.php","line_kangml.php","line_var.php","zs.php");?>">
+                        <a href="#" class="<?php echoActiveMore("line_add.php","line_list.php","cat_add.php","line_daili.php","line_kangml.php","line_var.php","zs.php");?>">
+                            <span data-feather="target" class="nav-icon"></span>
+                            <span class="menu-text">线路</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="line_add.php" class="<?php echoActive('line_add.php');?>">添加线路</a>
+                            </li>
+                            <li>
+                                <a href="line_list.php" class="<?php echoActive('line_list.php');?>">线路管理</a>
+                            </li>
+                            <li>
+                                <a href="cat_add.php" class="<?php echoActive('cat_add.php');?>">线路分类</a>
+                            </li>
+                            <li>
+                                <a href="line_daili.php" class="<?php echoActive('line_daili.php');?>">代理线路</a>
+                            </li>
+                            <li>
+                                <a href="line_kangml.php" class="<?php echoActive('line_kangml.php');?>">官方推送线路</a>
+                            </li>
+                            <li>
+                                <a href="line_var.php" class="<?php echoActive('line_var.php');?>">线路变量配置</a>
+                            </li>
+                            <li>
+                                <a href="zs.php" class="<?php echoActive('km_list.php');?>">线路安装配置</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("lj_ad.php","lj_hosts.php","lj_setting.php","lh_ip_port.php","lj_domain.php");?>">
+                        <a href="#" class="<?php echoActiveMore("lj_ad.php","lj_hosts.php","lj_setting.php","lh_ip_port.php","lj_domain.php");?>">
+                            <span data-feather="cpu" class="nav-icon"></span>
+                            <span class="menu-text">拦截</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a href="lj_ad.php" class="<?php echoActive('lj_ad.php');?>">广告拦截</a>
+                            </li>
+                            <li>
+                                <a href="lj_hosts.php" class="<?php echoActive('lj_hosts.php');?>">hosts拦截</a>
+                            </li>
+                            <li>
+                                <a href="lj_setting.php" class="<?php echoActive('lj_setting.php');?>">拦截配置</a>
+                            </li>
+                            <li>
+                                <a href="lh_ip_port.php" class="<?php echoActive('lh_ip_port.php');?>">IP端口拦截</a>
+                            </li>
+                            <li>
+                                <a href="lj_domain.php" class="<?php echoActive('lj_domain.php');?>">域名拦截</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("add_gg.php","add_dlgg.php","list_gg.php","feedback.php","dl_feedback.php");?>">
+                        <a href="#" class="<?php echoActiveMore("add_gg.php","add_dlgg.php","list_gg.php","feedback.php","dl_feedback.php");?>">
+                            <span data-feather="message-square" class="nav-icon"></span>
+                            <span class="menu-text">消息</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a class="<?php echoActive('add_gg.php');?>" href="add_gg.php">发布官方消息</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('add_dlgg.php');?>" href="add_dlgg.php">发布代理消息</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('list_gg.php');?>" href="list_gg.php">官方消息列表</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('feedback.php');?>" href="feedback.php">线路反馈消息</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('dl_feedback.php');?>" href="dl_feedback.php">代理反馈消息</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("note_add.php","note_list.php","fwq_add.php","fwq_list.php");?>">
+                        <a href="#" class="<?php echoActiveMore("note_add.php","note_list.php","fwq_add.php","fwq_list.php");?>">
+                            <span data-feather="server" class="nav-icon"></span>
+                            <span class="menu-text">负载</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a class="<?php echoActive('note_add.php');?>" href="note_add.php">添加节点</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('note_list.php');?>" href="note_list.php">节点管理</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('fwq_add.php');?>" href="fwq_add.php">添加服务器
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('fwq_list.php');?>" href="fwq_list.php">服务器管理
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("sms_log.php","login_log.php","jk_log.php");?>">
+                        <a href="#" class="<?php echoActiveMore("sms_log.php","login_log.php","jk_log.php");?>">
+                            <span data-feather="bar-chart-2" class="nav-icon"></span>
+                            <span class="menu-text">日志</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a class="<?php echoActive('sms_log.php');?>" href="sms_log.php">发信日志</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('login_log.php');?>" href="login_log.php">登陆日志</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('jk_log.php');?>" href="jk_log.php">监控日志
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="has-child <?php echoOpenMore("email.php","sms.php","register_setting.php","float.php","qq_admin.php","create_app.php","AdminShengji.php","cron.php");?>">
+                        <a href="#" class="<?php echoActiveMore("email.php","sms.php","register_setting.php","float.php","qq_admin.php","create_app.php","AdminShengji.php","cron.php");?>">
+                            <span data-feather="settings" class="nav-icon"></span>
+                            <span class="menu-text">高级设置</span>
+                            <span class="toggle-icon"></span>
+                        </a>
+                        <ul>
+                            <li>
+                                <a class="<?php echoActive('email.php');?>" href="email.php">邮箱设置</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('sms.php');?>" href="sms.php">短信设置</a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('register_setting.php');?>" href="register_setting.php">注册设置
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('float.php');?>" href="float.php">限速设置
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('qq_admin.php');?>" href="qq_admin.php">APP设置
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('create_app.php');?>" href="create_app.php">APP生成
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('AdminShengji.php');?>" href="AdminShengji.php">APP升级推送
+                                </a>
+                            </li>
+                            <li>
+                                <a class="<?php echoActive('cron.php');?>" href="cron.php">定时任务
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>

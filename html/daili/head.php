@@ -5,7 +5,7 @@
 <html lang="cn" >
 <head>
 <meta charset="utf-8" />
-<title>叮咚流量卫士 云库系统</title>
+<title>代理控制中心</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <link rel="stylesheet" href="/css/bootstrap.min.css" />
 <script src="/css/jquery.min.js"></script>
