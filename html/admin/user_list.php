@@ -11,9 +11,6 @@ if ($_GET["a"] == "qset") {
         <?php
         $my = $_GET['my'] ?? null;
         if ($my == 'del') {
-            echo '<div class="panel panel-default">
-<div class="panel-heading w h"><h3 class="panel-title">删除账号</h3></div>
-<div class="panel-body box">';
             $user = $_GET['user'];
             $sql = db(_openvpn_)->where(array(_iuser_ => $user))->delete();
             if ($sql) {
@@ -22,7 +19,6 @@ if ($_GET["a"] == "qset") {
             } else {
                 echo '删除失败！';
             }
-            echo '<hr/><a href="./user_list.php">>>返回账号列表</a></div></div>';
         } else {
             if (!empty($_GET['kw'])) {
                 $numrows = db(_openvpn_)->where(_iuser_ . " LIKE :kw", [":kw" => "%" . $_GET["kw"] . "%"])->getnums();
@@ -123,7 +119,7 @@ if ($_GET["a"] == "qset") {
                                                 $vip = "";
                                             }
                                             ?>
-                                            <tr>
+                                            <tr class="line-id-<?= $res['iuser'] ?>">
                                                 <td>
                                                     <div class="d-flex">
                                                         <div class="d-flex align-items-center">
@@ -247,6 +243,15 @@ if ($_GET["a"] == "qset") {
             $.post(url, {}, function () {
                 location.reload();
             });
+        }
+        function delLine(id){
+            var url = './user_list.php?my=del&user='+id;
+            $.post(url,{
+
+            },function(){
+
+            });
+            $('.line-id-'+id).slideUp();
         }
     </script>
     <?php

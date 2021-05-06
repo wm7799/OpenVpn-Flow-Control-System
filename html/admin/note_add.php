@@ -71,6 +71,7 @@ if ($_GET['act'] == 'update') {
                                             <span style="color:red">*</span>
                                         </label>
                                             <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15"
+                                                   name="name"
                                                    value="<?php echo $info['name'] ?: "极速节点" . $nums ?>">
                                     </div>
                                     <div class="form-group">

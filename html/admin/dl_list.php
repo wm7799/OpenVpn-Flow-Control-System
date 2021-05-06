@@ -3,7 +3,6 @@ $mod = 'blank';
 $title = "代理列表";
 include('head.php');
 include('nav.php');
-$key = file_get_contents("/root/res/app_key.txt");
 ?>
 <?php
 if ($_GET["act"] == 'del') {
@@ -137,7 +136,7 @@ if ($_GET["act"] == 'del') {
                             </td>
                             <td>
                                 <div class="userDatatable-content">
-                                    <?php echo trim($key) . "_" . $res["id"]; ?>
+                                    <?php echo $res["id"]; ?>
                                 </div>
                             </td>
                             <td>

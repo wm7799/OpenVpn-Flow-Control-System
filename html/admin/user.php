@@ -42,7 +42,7 @@ if ($_GET["act"] == "mod") {
                                     <label for="inputPassword" class="color-dark fs-14 fw-500 align-center">用户名</label>
                                     <input type="text" class="form-control ih-medium ip-gray radius-xs b-light px-15"
                                            id="username"
-                                           placeholder="请输入密码" value="<?php echo $admin["username"] ?>">
+                                           placeholder="请输入用户名" value="<?php echo $admin["username"] ?>">
                                 </div>
                                 <div class="form-group">
                                     <label for="inputPassword" class="color-dark fs-14 fw-500 align-center">当前密码</label>

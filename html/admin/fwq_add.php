@@ -23,7 +23,7 @@ if ($_GET['act'] == 'update') {
         'name' => $_POST['name'],
         'ipport' => $_POST['ipport']
     ))) {
-        tip_success("新增服务器【" . $_POST['name'] . "】成功！", '?');
+        tip_success("新增服务器【" . $_POST['name'] . "】成功！", 'fwq_list.php');
     } else {
         tip_failed("十分抱歉修改失败", '?');
     }

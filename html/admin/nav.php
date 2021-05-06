@@ -1,32 +1,46 @@
 <?php
 function echoActive($str){
     $url=$_SERVER['REQUEST_URI'];
-    echo $url == '/admin/'.$str ? 'active' : '';
+    echo strpos($url,$str) == true ? 'active' : '';
 }
 function echoActiveMore(...$args){
     $url=$_SERVER['REQUEST_URI'];
     foreach ($args as $value){
-        echo $url == '/admin/'.$value ? 'active' : '';
+        echo strpos($url,$value) ? 'active' : '';
     }
 }
 function echoOpenMore(...$args){
     $url=$_SERVER['REQUEST_URI'];
     foreach ($args as $value){
-        echo $url == '/admin/'.$value ? 'open' : '';
+        echo strpos($url,$value) ? 'open' : '';
+    }
+}
+$ver = file_get_contents("./version.txt");
+$changelogStr = '未知';
+$notNew = false;
+if ($ver){
+    $ver_rep = file_get_contents("http://a.pykky.com/version.php?ver=".$ver);
+    if ($ver_rep){
+        $ver_arr = explode(" ",$ver_rep);
+        if ($ver_arr[1] == 'notNew'){
+            $changelogStr = $ver_arr[0].' 待更新';
+            $notNew = true;
+        }else{
+            $changelogStr = $ver_arr[0];
+        }
     }
 }
 ?>
 <body class="layout-light side-menu">
     <div class="mobile-search"></div>
-
     <div class="mobile-author-actions"></div>
     <header class="header-top">
         <nav class="navbar navbar-light">
             <div class="navbar-left">
                 <a href="" class="sidebar-toggle">
-                    <img class="svg" src="img/svg/bars.svg" alt="img"></a>
-                <a class="navbar-brand" href="#"><img class="svg dark" src="img/logo_Dark.png" alt=""><img class="light"
-                        src="img/Logo_white.png" alt=""></a>
+                    <img class="svg" src="../img/svg/bars.svg" alt="img"></a>
+                <a class="navbar-brand" href="#"><img class="svg dark" src="../img/logo_Dark.png" alt=""><img class="light"
+                                                                                                              src="../img/Logo_white.png" alt=""></a>
             </div>
             <!-- ends: navbar-left -->
 
@@ -43,7 +57,18 @@ function echoOpenMore(...$args){
                                 aria-label="Search">
                         </form>
                     </li>
+                    <?php if ($notNew){?>
                     <li class="nav-notification">
+                        <div class="dropdown-custom">
+                            <a href="javascript:alert('有新的更新啦！请到官网使用最新脚本进行更新。');" class="nav-item-toggle">
+                                <span data-feather="upload"></span></a>
+                        </div>
+                    </li>
+                    <li class="nav-notification">
+                        <?php }else{
+                            echo '<li>';
+                        }
+                        ?>
                         <div class="dropdown-custom">
                             <a href="javascript:;" class="nav-item-toggle">
                                 <span data-feather="bell"></span></a>
@@ -138,40 +163,19 @@ function echoOpenMore(...$args){
                     <!-- ends: .nav-settings -->
                     <li class="nav-support">
                         <div class="dropdown-custom">
-                            <a href="javascript:;" class="nav-item-toggle">
+                            <a href="help.php" class="nav-item-toggle">
                                 <span data-feather="help-circle"></span></a>
-                            <div class="dropdown-wrapper">
-                                <div class="list-group">
-                                    <span>使用说明</span>
-                                    <ul>
-                                        <li>
-                                            <a href="">如何快速开始</a>
-                                        </li>
-                                        <li>
-                                            <a href="">如何添加服务器</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="list-group">
-                                    <span>更多说明</span>
-                                    <ul>
-                                        <li>
-                                            <a href="">前往康师傅博客</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
                         </div>
                     </li>
                     <!-- ends: .nav-support -->
                     <li class="nav-author">
                         <div class="dropdown-custom">
-                            <a href="javascript:;" class="nav-item-toggle"><img src="img/author-nav.jpg" alt=""
-                                    class="rounded-circle"></a>
+                            <a href="javascript:;" class="nav-item-toggle"><img src="../img/author-nav.jpg" alt=""
+                                                                                class="rounded-circle"></a>
                             <div class="dropdown-wrapper">
                                 <div class="nav-author__info">
                                     <div class="author-img">
-                                        <img src="img/author-nav.jpg" alt="" class="rounded-circle">
+                                        <img src="../img/author-nav.jpg" alt="" class="rounded-circle">
                                     </div>
                                     <div>
                                         <h6>欢迎您</h6>
@@ -234,10 +238,10 @@ function echoOpenMore(...$args){
                         </a>
                     </li>
                     <li>
-                        <a href="update.php" class="<?php echoActive('changelog.html');?>">
+                        <a href="changelog.php" class="<?php echoActive('changelog.php');?>">
                             <span data-feather="activity" class="nav-icon"></span>
                             <span class="menu-text">更新记录</span>
-                            <span class="badge badge-primary menuItem">3.0.0</span>
+                            <span class="badge badge-primary menuItem"><?=$changelogStr ?></span>
                         </a>
                     </li>
                     <li class="menu-title m-top-30">
@@ -262,9 +266,9 @@ function echoOpenMore(...$args){
                             <li>
                                 <a class="<?php echoActive('online.php');?>" href="online.php">在线用户</a>
                             </li>
-                            <li>
-                                <a class="<?php echoActive('user_setting.php');?>" href="user_setting.php">用户配置</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('user_setting.php');?><!--" href="user_setting.php">用户配置</a>-->
+<!--                            </li>-->
                         </ul>
                     </li>
                     <li class="has-child <?php echoOpenMore("dl_add.php","dl_list.php","type_add.php","type_list.php","dl_tx.php");?>">
@@ -286,9 +290,9 @@ function echoOpenMore(...$args){
                             <li>
                                 <a href="type_list.php" class="<?php echoActive('type_list.php');?>">等级列表</a>
                             </li>
-                            <li>
-                                <a href="dl_tx.html" class="<?php echoActive('dl_tx.php');?>">代理提现审核</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a href="dl_tx.html" class="--><?php //echoActive('dl_tx.php');?><!--">代理提现审核</a>-->
+<!--                            </li>-->
                         </ul>
                     </li>
                     <li class="has-child <?php echoOpenMore("add_tc.php","list_tc.php","km_list.php","km_his.php","pay_order.php","pay.php");?>">
@@ -334,17 +338,17 @@ function echoOpenMore(...$args){
                             <li>
                                 <a href="cat_add.php" class="<?php echoActive('cat_add.php');?>">线路分类</a>
                             </li>
-                            <li>
-                                <a href="line_daili.php" class="<?php echoActive('line_daili.php');?>">代理线路</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a href="line_daili.php" class="--><?php //echoActive('line_daili.php');?><!--">代理线路</a>-->
+<!--                            </li>-->
                             <li>
                                 <a href="line_kangml.php" class="<?php echoActive('line_kangml.php');?>">官方推送线路</a>
                             </li>
+<!--                            <li>-->
+<!--                                <a href="line_var.php" class="--><?php //echoActive('line_var.php');?><!--">线路安装配置</a>-->
+<!--                            </li>-->
                             <li>
-                                <a href="line_var.php" class="<?php echoActive('line_var.php');?>">线路变量配置</a>
-                            </li>
-                            <li>
-                                <a href="zs.php" class="<?php echoActive('km_list.php');?>">线路安装配置</a>
+                                <a href="zs.php" class="<?php echoActive('zs.php');?>">线路变量配置</a>
                             </li>
                         </ul>
                     </li>
@@ -355,21 +359,21 @@ function echoOpenMore(...$args){
                             <span class="toggle-icon"></span>
                         </a>
                         <ul>
-                            <li>
-                                <a href="lj_ad.php" class="<?php echoActive('lj_ad.php');?>">广告拦截</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a href="lj_ad.php" class="--><?php //echoActive('lj_ad.php');?><!--">广告拦截</a>-->
+<!--                            </li>-->
                             <li>
                                 <a href="lj_hosts.php" class="<?php echoActive('lj_hosts.php');?>">hosts拦截</a>
                             </li>
-                            <li>
-                                <a href="lj_setting.php" class="<?php echoActive('lj_setting.php');?>">拦截配置</a>
-                            </li>
-                            <li>
-                                <a href="lh_ip_port.php" class="<?php echoActive('lh_ip_port.php');?>">IP端口拦截</a>
-                            </li>
-                            <li>
-                                <a href="lj_domain.php" class="<?php echoActive('lj_domain.php');?>">域名拦截</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a href="lj_setting.php" class="--><?php //echoActive('lj_setting.php');?><!--">拦截配置</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a href="lh_ip_port.php" class="--><?php //echoActive('lh_ip_port.php');?><!--">IP端口拦截</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a href="lj_domain.php" class="--><?php //echoActive('lj_domain.php');?><!--">域名拦截</a>-->
+<!--                            </li>-->
                         </ul>
                     </li>
                     <li class="has-child <?php echoOpenMore("add_gg.php","add_dlgg.php","list_gg.php","feedback.php","dl_feedback.php");?>">
@@ -382,18 +386,18 @@ function echoOpenMore(...$args){
                             <li>
                                 <a class="<?php echoActive('add_gg.php');?>" href="add_gg.php">发布官方消息</a>
                             </li>
-                            <li>
-                                <a class="<?php echoActive('add_dlgg.php');?>" href="add_dlgg.php">发布代理消息</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('add_dlgg.php');?><!--" href="add_dlgg.php">发布代理消息</a>-->
+<!--                            </li>-->
                             <li>
                                 <a class="<?php echoActive('list_gg.php');?>" href="list_gg.php">官方消息列表</a>
                             </li>
                             <li>
                                 <a class="<?php echoActive('feedback.php');?>" href="feedback.php">线路反馈消息</a>
                             </li>
-                            <li>
-                                <a class="<?php echoActive('dl_feedback.php');?>" href="dl_feedback.php">代理反馈消息</a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('dl_feedback.php');?><!--" href="dl_feedback.php">代理反馈消息</a>-->
+<!--                            </li>-->
                         </ul>
                     </li>
                     <li class="has-child <?php echoOpenMore("note_add.php","note_list.php","fwq_add.php","fwq_list.php");?>">
@@ -419,21 +423,25 @@ function echoOpenMore(...$args){
                             </li>
                         </ul>
                     </li>
-                    <li class="has-child <?php echoOpenMore("sms_log.php","login_log.php","jk_log.php");?>">
-                        <a href="#" class="<?php echoActiveMore("sms_log.php","login_log.php","jk_log.php");?>">
+                    <li class="has-child <?php echoOpenMore("sms_log.php","login_log.php","jk_log.php","net.php");?>">
+                        <a href="#" class="<?php echoActiveMore("sms_log.php","login_log.php","jk_log.php","net.php");?>">
                             <span data-feather="bar-chart-2" class="nav-icon"></span>
                             <span class="menu-text">日志</span>
                             <span class="toggle-icon"></span>
                         </a>
                         <ul>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('sms_log.php');?><!--" href="sms_log.php">发信日志</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('login_log.php');?><!--" href="login_log.php">登陆日志</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('jk_log.php');?><!--" href="jk_log.php">监控日志-->
+<!--                                </a>-->
+<!--                            </li>-->
                             <li>
-                                <a class="<?php echoActive('sms_log.php');?>" href="sms_log.php">发信日志</a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('login_log.php');?>" href="login_log.php">登陆日志</a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('jk_log.php');?>" href="jk_log.php">监控日志
+                                <a class="<?php echoActive('net.php');?>" href="net.php">网速监控
                                 </a>
                             </li>
                         </ul>
@@ -445,16 +453,16 @@ function echoOpenMore(...$args){
                             <span class="toggle-icon"></span>
                         </a>
                         <ul>
-                            <li>
-                                <a class="<?php echoActive('email.php');?>" href="email.php">邮箱设置</a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('sms.php');?>" href="sms.php">短信设置</a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('register_setting.php');?>" href="register_setting.php">注册设置
-                                </a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('email.php');?><!--" href="email.php">邮箱设置</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('sms.php');?><!--" href="sms.php">短信设置</a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('register_setting.php');?><!--" href="register_setting.php">注册设置-->
+<!--                                </a>-->
+<!--                            </li>-->
                             <li>
                                 <a class="<?php echoActive('float.php');?>" href="float.php">限速设置
                                 </a>
@@ -463,18 +471,18 @@ function echoOpenMore(...$args){
                                 <a class="<?php echoActive('qq_admin.php');?>" href="qq_admin.php">APP设置
                                 </a>
                             </li>
-                            <li>
-                                <a class="<?php echoActive('create_app.php');?>" href="create_app.php">APP生成
-                                </a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('AdminShengji.php');?>" href="AdminShengji.php">APP升级推送
-                                </a>
-                            </li>
-                            <li>
-                                <a class="<?php echoActive('cron.php');?>" href="cron.php">定时任务
-                                </a>
-                            </li>
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('create_app.php');?><!--" href="create_app.php">APP生成-->
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('AdminShengji.php');?><!--" href="AdminShengji.php">APP升级推送-->
+<!--                                </a>-->
+<!--                            </li>-->
+<!--                            <li>-->
+<!--                                <a class="--><?php //echoActive('cron.php');?><!--" href="cron.php">定时任务-->
+<!--                                </a>-->
+<!--                            </li>-->
                         </ul>
                     </li>
                 </ul>

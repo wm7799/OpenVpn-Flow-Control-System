@@ -72,15 +72,15 @@ if ($my == 'noteoff') {
                             <input type="submit" class="btn btn-info btn-default btn-squared btn-shadow-info mb-3"
                                    value="保存排序 (序号大的靠前)">
                             <div class="table-responsive">
-                                <table class="table table-striped ">
+                                <table class="table mb-0 table-borderless">
                                     <thead>
-                                    <tr>
-                                        <th>排序</th>
-                                        <th>名称</th>
-                                        <th>地址</th>
-                                        <th>添加时间</th>
-                                        <th>描述</th>
-                                        <th>操作</th>
+                                    <tr class="userDatatable-header">
+                                        <th><span class="userDatatable-title">排序</span></th>
+                                        <th><span class="userDatatable-title">名称</span></th>
+                                        <th><span class="userDatatable-title">地址</span></th>
+                                        <th><span class="userDatatable-title">添加时间</span></th>
+                                        <th><span class="userDatatable-title">描述</span></th>
+                                        <th><span class="userDatatable-title float-right">操作</span></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -91,17 +91,34 @@ if ($my == 'noteoff') {
                                     foreach ($rs as $res) {
                                         ?>
                                         <tr>
-                                            <td><input value="<?= $res['order'] ?>" class="form-control"
-                                                       name="order[<?= $res["id"] ?>]" style="width:40px"></td>
-                                            <td><?= $res['name'] ?></td>
-                                            <td><?= $res['ipport'] ?></td>
-                                            <td><?= $res['time'] ?></td>
-                                            <td><?= $res["description"] ?></td>
-                                            <td><a href="?my=del&id=<?= $res['id'] ?>" class="btn btn-xs btn-link"
-                                                   onclick="if(!confirm('你确实要删除此记录吗？')){return false;}"><i
-                                                            class="icon-trash"></i></a>
-                                                <a href="note_add.php?act=mod&id=<?= $res['id'] ?>"
-                                                   class="btn btn-xs btn-link"><i class="icon-pencil"></i></a></td>
+                                            <td><div class="userDatatable-content"><input value="<?= $res['order'] ?>" class="form-control"
+                                                       name="order[<?= $res["id"] ?>]" style="width:60px"></div></td>
+                                            <td><div class="userDatatable-content">
+                                                    <?= $res['name'] ?>
+                                                </div></td>
+                                            <td><div class="userDatatable-content">
+                                                    <?= $res['ipport'] ?>
+                                                </div></td>
+                                            <td><div class="userDatatable-content">
+                                                    <?= $res['time'] ?>
+                                                </div></td>
+                                            <td><div class="userDatatable-content">
+                                                    <?= $res["description"] ?>
+                                                </div></td>
+                                            <td>
+                                                <ul class="orderDatatable_actions mb-0 d-flex flex-wrap">
+                                                    <li>
+                                                        <a href="note_add.php?act=mod&id=<?= $res['id'] ?>"
+                                                           class="view">
+                                                            <span data-feather="edit"></span></a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="?my=del&id=<?= $res['id'] ?>" class="remove"
+                                                           onclick="if(!confirm('你确实要删除此记录吗？')){return false;}">
+                                                            <span data-feather="trash-2"></span></a>
+                                                    </li>
+                                                </ul>
+                                            </td>
                                         </tr>
                                         <?php
                                     }

@@ -1,48 +1,34 @@
-<html>
+<?php
+require_once('system.php');
+?>
+<!DOCTYPE html>
+<html lang="cn" >
 <head>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-<meta charset="utf-8"/>
-<link href="/css/bootstrap.min.css" rel="stylesheet"/>
-<!-- 可选的Bootstrap主题文件（一般不使用） -->
-<script src="/css/bootstrap-theme.min.css"></script>
-<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-<script src="/css/jquery.min.js"></script>
-<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-<script src="/css/bootstrap.min.js"></script>
-<title>用户中心</title>
-<style>
-body,html{
-	background:#efefef;
-	padding:0px;
-	margin:0px;
-	overflow-x:hidden;
-}
-.main{
-	margin:10px;
-}
-.list-group-item a{
-	display:block;
-}
-.label-t{
-	margin-bottom:20px;
-}
-.line{
-	height:1px;
-	background:#ccc;
-}
-.btn,input[type="text"], input[type="password"],input,.form-control,.ui-autocomplete-input, textarea, .uneditable-input{
-	-webkit-border-radius: 0px;
-    -moz-border-radius: 0px;
-    border-radius: 0px;
-	padding-left:10px;
-	padding-right:10px;
-}
-.control-label{
-	color:#555;
-	font-weight:normal;
-}
-.btn:hover{
-	transition: background-color .3s;	
-}
-</style></head>
-<body>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><?="用户中心 - ".$title?></title>
+
+    <link href="../assets/google-font.css" rel="stylesheet">
+    <!-- inject:css-->
+    <link rel="stylesheet" href="../assets/vendor_assets/css/bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/daterangepicker.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/fontawesome.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/fullcalendar@5.2.0.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/jquery-jvectormap-2.0.5.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/jquery.mCustomScrollbar.min.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/leaflet.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/line-awesome.min.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/MarkerCluster.Default.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/select2.min.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/slick.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/star-rating-svg.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/trumbowyg.min.css">
+    <link rel="stylesheet" href="../assets/vendor_assets/css/wickedpicker.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- endinject -->
+
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon.png">
+</head>

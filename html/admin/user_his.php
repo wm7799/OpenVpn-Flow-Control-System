@@ -13,7 +13,7 @@ include("nav.php");
                         </div>
                     </div>
                     <?php
-                    if (!is_file("userdata.php")) {
+                    if (is_file("userdata.php")) {
                         include("userdata.php");
                         $time = filemtime("userdata.php");
                         $count = count($data);

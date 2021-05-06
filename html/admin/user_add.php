@@ -155,7 +155,7 @@ if (ACT == 'add') {
                                             <h5 class="fw-500">批量生成用户</h5>
                                         </div>
                                         <div class="edit-profile__body">
-                                            <form method="POST" action="?act=addPL" onsubmit="return checkStr2()">
+                                            <form method="POST" action="?act=addPL">
                                                 <div class="form-group mb-25">
                                                     <label for="name4">数量(数字)<span
                                                                 style="color:red">*</span></label>
@@ -241,17 +241,4 @@ include('footer.php');
         return true;
     }
 
-    function checkStr2() {
-        const username = $('[name="username"]').val();
-        const password = $('[name="password"]').val();
-        const rate = $('[name="rate"]').val();
-        const days = $('[name="days"]').val();
-        const bz = $('[name="bz"]').val();
-
-        if (username == "" || password == "" || rate == "" || days == "") {
-            alert("用户名，密码，流量，期限 均不能为空");
-            return false;
-        }
-        return true;
-    }
 </script>

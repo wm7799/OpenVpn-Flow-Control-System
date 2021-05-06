@@ -9,7 +9,7 @@ if($act == "bw"){
 	//var_dump($data);
 	echo "[";
 	foreach($data as $key=>$vo){
-		$bw = $vo["tx"]*8/1024/1024;
+		$bw = $vo["tx"]*8/1024/1024/1024;
 		$datas[] = '{ "name": "'.$key.'", "value": "'.round($bw,3).'" }';
 	}
 	$dataNums = count($datas);
@@ -46,7 +46,7 @@ if($act == "bw"){
 		//var_dump($data);
 		echo "[";
 		foreach($data as $key=>$vo){
-			$bw = $vo["tx"]*8/1024/1024;
+			$bw = $vo["tx"]*8/1024/1024/1024;
 			$datas[] = '{ "name": "'.$key.':00", "value": "'.round($bw,3).'" }';
 		}
 		echo implode(",",$datas);

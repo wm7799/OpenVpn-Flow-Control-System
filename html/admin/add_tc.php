@@ -10,9 +10,8 @@ $title = '添加套餐';
 			'jg'=>$_POST['jg'],
 			'limit'=>$_POST['limit'],
 			'rate'=>$_POST['rate'],
-			'url'=>$_POST['url']
 		))){
-			tip_success("公告修改成功",'add_tc.php?act=mod&id='.$_GET['id']);
+			tip_success("修改成功",'add_tc.php?act=mod&id='.$_GET['id']);
 		}else{
 			tip_failed("十分抱歉修改失败",'add_tc.php?act=mod&id='.$_GET['id']);
 		}
@@ -24,10 +23,9 @@ $title = '添加套餐';
 			'jg'=>$_POST['jg'],
 			'limit'=>$_POST['limit'],
 			'rate'=>$_POST['rate'],
-			'url'=>$_POST['url'],
 			'time'=>time()
 		))){
-			tip_success("新增消息【".$_POST['name']."】成功！",'add_tc.php');
+			tip_success("新增【".$_POST['name']."】成功！",'add_tc.php');
 		}else{
 			tip_failed("十分抱歉修改失败",'add_tc.php');
 		}
@@ -80,11 +78,11 @@ $title = '添加套餐';
                                                                    value="<?php echo $info['rate'] ?>">
                                                         </div>
                                                         <div class="form-group mb-25">
-                                                            <label for="phoneNumber3">购买连接 <span
+                                                            <label for="phoneNumber3">套餐天数 <span
                                                                         style="color:red">*</span></label>
                                                             <input type="text" class="form-control" id="phoneNumber3"
-                                                                   name="url" placeholder="http://abc.cn/buy/122"
-                                                                   value="<?php echo $info['url'] ?>">
+                                                                   name="limit" placeholder="30"
+                                                                   value="<?php echo $info['limit'] ?>">
                                                         </div>
                                                         <div class="form-group mb-25">
                                                             <label for="phoneNumber5">套餐描述 <span

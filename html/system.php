@@ -27,3 +27,8 @@ $action = trim(@$_GET["act"]);
 define("ACT",$action);
 //开启session
 session_start();
+//在线支付
+$m = new Map();
+$pay_info['epayID'] = $m->type("pay")->getValue("epayID");
+$pay_info['epayKey'] = $m->type("pay")->getValue("epayKey");
+$pay_info['epaySite'] = $m->type("pay")->getValue("epaySite");

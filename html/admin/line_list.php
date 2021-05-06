@@ -55,7 +55,7 @@ else{
                                     <button class="btn btn-sm btn-primary btn-add dropdown-toggle px-15" type="button"
                                             id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
                                             aria-expanded="false">
-                                        <i class="las la-plus fs-16"></i> 分类
+                                        <i class="las la-list fs-16"></i> 分类
                                     </button>'; ?>
                     <div class="dropdown-default dropdown-menu" aria-labelledby="dropdownMenu3">
                         <?php
@@ -67,7 +67,7 @@ else{
                         $rs = db("line_grop")->where()->select();
                         foreach ($rs as $res) {
                             if ($res['id'] == $_GET["gid"]) {
-                                echo '<a class="dropdown-item" href="?gid=' . $res["id"] . '" style="display: flex;align-items: center;justify-content: space-between;"><span class="badge-dot dot-info"></span>' . $res['name'] . '</a>';
+                                echo '<a class="dropdown-item" href="?gid=' . $res["id"] . '" style="display: flex;align-items: center;justify-content: space-between;">' . $res['name'] . '<span class="badge-dot dot-info"></span></a>';
                             } else {
                                 echo '<a class="dropdown-item" href="?gid=' . $res["id"] . '">' . $res['name'] . '</a>';
                             }
@@ -122,8 +122,8 @@ else{
                                             <div class="checkbox-group d-flex">
                                                 <div class="checkbox-theme-default custom-checkbox checkbox-group__single d-flex">
                                                     <input class="checkbox" type="checkbox"
-                                                           id="check-grp-1">
-                                                    <label for="check-grp-1"></label>
+                                                           id="check-grp-<?= $vo['id'] ?>">
+                                                    <label for="check-grp-<?= $vo['id'] ?>"></label>
                                                 </div>
                                             </div>
                                         </div>
@@ -187,9 +187,9 @@ else{
             function qiyong(id) {
                 var doc = $('.line-id-' + id + ' .showstatus');
                 if (doc.attr('data') == "1") {
-                    doc.html("已禁用").attr({'data': '0'});
+                    doc.html("已禁用").attr({'data': '0','class': 'btn btn-danger btn-xs showstatus'});
                 } else {
-                    doc.html("已启用").attr({'data': '1'});
+                    doc.html("已启用").attr({'data': '1','class': 'btn btn-success btn-xs showstatus'});
                 }
                 var url = "line_list.php?act=show";
                 var data = {

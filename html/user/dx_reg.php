@@ -59,7 +59,7 @@ function sms(){
 		$('.sms').html('发送中...');
 		
 		$.post(
-			'/app_api/api.php?act=login_sms',{
+			'/kangml_app/client.php?act=login_sms',{
 				"username":$("#name").val(),
 			},function(data){
 				if(data.status == "success"){

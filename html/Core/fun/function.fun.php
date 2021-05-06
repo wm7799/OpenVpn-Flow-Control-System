@@ -33,6 +33,59 @@ function db($dbname)
     return $db;
 }
 
+function dbRemote($dbInfo)
+{
+    $db = new D($dbInfo,true);
+    return $db;
+}
+
+function processOrder($orderNum){
+    $payDB = db('pay_order');
+    $rs = $payDB->where(array('trade_no' => $orderNum))->find();//根据id找到订单信息
+    if ($rs) {
+        //变成已支付状态
+        $payDB->where(["trade_no"=>$orderNum])->update(["status" => 1]);
+        $tid = $rs["tid"];
+        //判断是代理还是用户充值
+        if ($tid == '-1') {
+            if(db('app_daili')->where(['id'=>$rs['name']])->update('balance = balance+'.$rs['money'].',`lock`=1')){
+                return "";
+            }else{
+                $payDB->where(["trade_no"=>$orderNum])->update(["status" => 2]);
+                return "充值失败";
+            }
+        } else {
+            $tc = db('app_tc')->where(array('id' => $tid))->find();
+            if(!$tc){
+                return "套餐已经失效";
+            }
+            $userinfo = db("openvpn")->where(["id"=>$rs["name"]])->find();
+            $addll = $tc['rate']*1024*1024;//套餐流量
+            //已到期，重置所有东西
+            if ($userinfo["endtime"]<time()){
+                $update[_maxll_] = $addll;
+                $update[_endtime_] = time() + $tc['limit']*24*60*60;
+                $update[_isent_] = "0";
+                $update[_irecv_] = "0";
+            }else{
+                //没到期，用旧时间叠加
+                $update[_maxll_] = $userinfo["maxll"] +$addll;//流量直接叠加
+                $update[_endtime_] = $userinfo["endtime"]+ ($tc['limit']*24*60*60);
+            }
+            $update[_i_] = "1";
+            if(db(_openvpn_)->where(["id"=>$rs["name"]])->update($update)){
+                return "";
+            }else{
+                $payDB->where(["trade_no"=>$orderNum])->update(["status" => 2]);
+                return "充值失败";
+            }
+        }
+
+    }else{
+        return '无法找到订单信息';
+    }
+}
+
 function getClientIP()
 {
     global $ip;

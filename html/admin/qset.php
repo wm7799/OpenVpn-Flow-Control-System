@@ -81,7 +81,7 @@ if ($_POST['type'] == "update") {
                                                                 </div>
                                                                 <div class="radio-theme-default custom-radio ">
                                                                     <input class="radio" type="radio" name="state"
-                                                                           value="0" id="radio-hl2">
+                                                                           value="0" id="radio-hl2" <?= $row['i'] ? "" : 'checked' ?>>
                                                                     <label for="radio-hl2">
                                                                         <span class="radio-text">禁止</span>
                                                                     </label>

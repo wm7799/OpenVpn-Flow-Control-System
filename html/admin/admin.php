@@ -1,4 +1,5 @@
 <?php
+$title = "仪表盘";
 require 'head.php';
 require 'nav.php';
 function unsetLine($arr)
@@ -16,18 +17,59 @@ function unsetLine($arr)
 $nums = db(_openvpn_)->getnums(); //注册用户
 $user_num = db(_openvpn_)->where(["i" => "1"])->getnums(); //有效用户
 $nums2 = db(_openvpn_)->where(["online" => "1"])->getnums(); //在线用户
+$tcpOnlineNum = db(_openvpn_)->where(["online" => "1", "proto" => "tcp-server"])->getnums(); //在线tcp用户
+$udpOnlineNum = db(_openvpn_)->where(["online" => "1", "proto" => "udp"])->getnums(); //在线udp用户
 $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
+$dailiNum = db("app_daili")->where()->getnums(); //代理数量
+$kmNum = db("app_kms")->where()->getnums(); //卡密数量
+$isUseKmNum = db("app_kms")->where(["isuse" => 1])->getnums(); //已使用卡密数量
+//流量统计
+$totalFlow = 0;
+for ($i = 0; $i <= 30; $i++) {
+    $t = time() - ((30 - $i) * 24 * 60 * 60);
+    $p = date("Y-m-d", $t);
+    $rs = db("top")->where(["time" => $p])->select();
+    if ($rs) {
+        $value = 0;
+        foreach ($rs as $res) {
+            $value += $res['data'] / 1024 / 1024 / 1024;
+        }
+        $totalFlow += $value;
+        if ($i > 15) $flowDayArr[] = round($value, 2);
+        if ($i > 20) $flowDaySumArr[] = round($totalFlow, 2);
+    } else {
+        if ($i > 15) $flowDayArr[] = 0;
+        if ($i > 20) $flowDaySumArr[] = round($totalFlow, 2);
+    }
+}
+//今日在线人数
+$todayTime = strtotime(date('Y-m-d', time()));//今天0点
+$todayOnlineNum = db(_openvpn_)->where("`login_time` > " . $todayTime)->getnums();
+$notOnlineNum = $nums - $todayOnlineNum;
+$efUserArr = json_decode(db("dash")->where(["name" => "ef_user"])->select()[0]["content"]);//有效用户历史数组
+$dailiArr = json_decode(db("dash")->where(["name" => "daili"])->select()[0]["content"]);//代理历史数组
+//收入
+$income = db('pay_order')->f('SUM(`money`)')->where(['status'=>1])->find()['SUM(`money`)'] ?? 0;
+$todayMoney = 0;
+for ($i = 0; $i <= 10; $i++) {
+    $day = -10 + $i;
+    $rs = db("pay_order")->f('SUM(`money`)')->where("DATEDIFF(`addtime`,NOW())=".$day." AND `status`=1")->find()['SUM(`money`)'];
+    if ($rs) {
+        if ($day == 0) $todayMoney = $rs;
+        $moneyDayArr[] = $rs;
+    } else {
+        if ($day == 0) $todayMoney = 0;
+        $moneyDayArr[] = 0;
+    }
+}
 ?>
 <div class="contents">
-
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12">
-
                 <div class="breadcrumb-main">
                     <h4 class="text-capitalize breadcrumb-title">仪表盘</h4>
                     <div class="breadcrumb-action justify-content-center flex-wrap">
-
                         <div class="dropdown action-btn">
                             <button class="btn btn-sm btn-primary btn-add dropdown-toggle" type="button"
                                     id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true"
@@ -49,9 +91,7 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                         </div>
                     </div>
                 </div>
-
             </div>
-
             <div class="col-lg-12 mb-25">
                 <div class="row">
                     <div class="col-md-3 mb-25">
@@ -60,22 +100,28 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                             <div class="forcast-details">
                                 <h1 class="forcast-value"><?= $user_num ?> 人</h1>
                                 <p class="forcast-status">
-								<span class="percentage color-success">
+                                    <?php
+                                    $lastEfUser = $user_num - $efUserArr[9];
+                                    if ($lastEfUser >= 0) {
+                                        echo '<span class="percentage color-success">
 									<span data-feather="arrow-up"></span>
-									<span>0</span>
-								</span>
+									<span>' . $lastEfUser . '</span>
+								</span>';
+                                    } else {
+                                        echo '<span class="percentage color-danger">
+									<span data-feather="arrow-down"></span>
+									<span>' . $lastEfUser . '</span>
+								</span>';
+                                    }
+                                    ?>
                                     <span class="forcast-text">人</span>
                                 </p>
                             </div>
                             <div class="forcast__chart">
                                 <div class="parentContainer">
-
-
                                     <div>
-                                        <canvas id="lineChartforcastOne"></canvas>
+                                        <canvas id="efUserChart"></canvas>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -85,24 +131,30 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                         <div class="forcast-cardbox">
                             <h6 class="forcast-title">代理</h6>
                             <div class="forcast-details">
-                                <h1 class="forcast-value">0 人</h1>
+                                <h1 class="forcast-value"><?= $dailiNum ?> 人</h1>
                                 <p class="forcast-status">
-								<span class="percentage color-success">
+                                    <?php
+                                    $lastDaili = $dailiNum - $dailiArr[9];
+                                    if ($lastDaili >= 0) {
+                                        echo '<span class="percentage color-success">
 									<span data-feather="arrow-up"></span>
-									<span>0</span>
-								</span>
+									<span>' . $lastDaili . '</span>
+								</span>';
+                                    } else {
+                                        echo '<span class="percentage color-danger">
+									<span data-feather="arrow-down"></span>
+									<span>' . $lastDaili . '</span>
+								</span>';
+                                    }
+                                    ?>
                                     <span class="forcast-text">人</span>
                                 </p>
                             </div>
                             <div class="forcast__chart">
                                 <div class="parentContainer">
-
-
                                     <div>
-                                        <canvas id="lineChartforcastTwo"></canvas>
+                                        <canvas id="dailiChart"></canvas>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -110,26 +162,32 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                     </div>
                     <div class="col-md-3 mb-25">
                         <div class="forcast-cardbox">
-                            <h6 class="forcast-title">总流量</h6>
+                            <h6 class="forcast-title">月总流量</h6>
                             <div class="forcast-details">
-                                <h1 class="forcast-value">0 G</h1>
+                                <h1 class="forcast-value"><?= round($totalFlow, 2) ?> G</h1>
                                 <p class="forcast-status">
-								<span class="percentage color-success">
+                                    <?php
+                                    $lastFlow = $flowDaySumArr[9] - $flowDaySumArr[8];
+                                    if ($lastFlow >= 0) {
+                                        echo '<span class="percentage color-success">
 									<span data-feather="arrow-up"></span>
-									<span>0</span>
-								</span>
+									<span>' . $lastFlow . '</span>
+								</span>';
+                                    } else {
+                                        echo '<span class="percentage color-danger">
+									<span data-feather="arrow-down"></span>
+									<span>' . $lastFlow . '</span>
+								</span>';
+                                    }
+                                    ?>
                                     <span class="forcast-text">G</span>
                                 </p>
                             </div>
                             <div class="forcast__chart">
                                 <div class="parentContainer">
-
-
                                     <div>
-                                        <canvas id="lineChartforcastOne"></canvas>
+                                        <canvas id="monthFlowChart"></canvas>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
@@ -139,34 +197,29 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                         <div class="forcast-cardbox">
                             <h6 class="forcast-title">总收入</h6>
                             <div class="forcast-details">
-                                <h1 class="forcast-value">0 元</h1>
+                                <h1 class="forcast-value"><?=$income?> 元</h1>
                                 <p class="forcast-status">
 								<span class="percentage color-success">
 									<span data-feather="arrow-up"></span>
-									<span>0</span>
+									<span><?=$todayMoney ?></span>
 								</span>
                                     <span class="forcast-text">元</span>
                                 </p>
                             </div>
                             <div class="forcast__chart">
                                 <div class="parentContainer">
-
-
                                     <div>
-                                        <canvas id="lineChartforcastTwo"></canvas>
+                                        <canvas id="moneyChart"></canvas>
                                     </div>
-
-
                                 </div>
                             </div>
                         </div>
                         <!-- ends: .forcast-cardbox -->
                     </div>
                     <div class="col-lg-6 mb-25">
-
                         <div class="card broder-0">
                             <div class="card-header">
-                                <h6>七天流量统计（单位GB）</h6>
+                                <h6>近两周流量统计（单位GB）</h6>
                             </div>
                             <!-- ends: .card-header -->
                             <div class="card-body pt-0">
@@ -175,25 +228,20 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                          aria-labelledby="tl_revenue-year-tab">
                                         <div class="revenue-labels">
                                             <div>
-                                                <strong class="text-primary">0</strong>
-                                                <span>7天最低使用量</span>
+                                                <strong class="text-primary"><?= min($flowDayArr) ?></strong>
+                                                <span>最低使用量</span>
                                             </div>
                                             <div>
-                                                <strong>0</strong>
-                                                <span>7天内最高使用量</span>
+                                                <strong><?= max($flowDayArr) ?></strong>
+                                                <span>最高使用量</span>
                                             </div>
                                         </div>
                                         <!-- ends: .performance-stats -->
-
                                         <div class="wp-chart">
                                             <div class="parentContainer">
-
-
                                                 <div>
-                                                    <canvas id="myChart6"></canvas>
+                                                    <canvas id="twoWeeksFlowChart"></canvas>
                                                 </div>
-
-
                                             </div>
                                         </div>
                                     </div>
@@ -201,7 +249,6 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                             </div>
                             <!-- ends: .card-body -->
                         </div>
-
                     </div>
                     <div class="col-lg-6 mb-25">
                         <div class="row">
@@ -211,18 +258,19 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                         <h6 class="ratio-title">今日上线比例</h6>
                                         <div
                                                 class="ratio-info d-flex justify-content-between align-items-center">
-                                            <h1 class="ratio-point">0 人</h1>
-                                            <span class="ratio-percentage color-success">0%</span>
+                                            <h1 class="ratio-point"><?= $todayOnlineNum ?> 人</h1>
+                                            <span class="ratio-percentage color-success"><?= round($todayOnlineNum / $nums * 100, 0) ?>%</span>
                                         </div>
                                         <div class="progress-wrap mb-0">
                                             <div class="progress">
                                                 <div class="progress-bar bg-primary" role="progressbar"
-                                                     style="width: 80%;" aria-valuenow="80" aria-valuemin="0"
+                                                     style="width: <?= round($todayOnlineNum / $user_num * 100, 0) ?>%;"
+                                                     aria-valuenow="<?= round($todayOnlineNum / $nums * 100, 0) ?>"
+                                                     aria-valuemin="0"
                                                      aria-valuemax="100"></div>
-
                                             </div>
                                             <span class="progress-text">
-											<span class="color-dark dark">0 人</span>
+											<span class="color-dark dark"><?= $notOnlineNum ?> 人</span>
 											<span class="progress-target">未上线</span>
 										</span>
                                         </div>
@@ -236,18 +284,19 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                         <h6 class="ratio-title">卡密使用比例</h6>
                                         <div
                                                 class="ratio-info d-flex justify-content-between align-items-center">
-                                            <h1 class="ratio-point">0 张</h1>
-                                            <span class="ratio-percentage color-success">0%</span>
+                                            <h1 class="ratio-point"><?= $isUseKmNum ?> 张</h1>
+                                            <span class="ratio-percentage color-success"><?= round($isUseKmNum / $kmNum * 100, 0) ?>%</span>
                                         </div>
                                         <div class="progress-wrap mb-0">
                                             <div class="progress">
                                                 <div class="progress-bar bg-warning" role="progressbar"
-                                                     style="width: 80%;" aria-valuenow="80" aria-valuemin="0"
+                                                     style="width: <?= round($isUseKmNum / $kmNum * 100, 0) ?>%;"
+                                                     aria-valuenow="<?= round($isUseKmNum / $kmNum * 100, 0) ?>"
+                                                     aria-valuemin="0"
                                                      aria-valuemax="100"></div>
-
                                             </div>
                                             <span class="progress-text">
-											<span class="color-dark dark">0 张</span>
+											<span class="color-dark dark"><?= $kmNum ?> 张</span>
 											<span class="progress-target">总卡密数量</span>
 										</span>
                                         </div>
@@ -260,7 +309,7 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                         class="feature-cards5 d-flex justify-content-between border-0 radius-xl bg-white p-25">
                                     <div class="application-task d-flex align-items-center">
                                         <div class="application-task-icon wh-60 bg-secondary content-center">
-                                            <img class="svg" src="img/svg/feature-cards10.svg" alt="">
+                                            <img class="svg" src="../img/svg/feature-cards10.svg" alt="">
                                         </div>
                                         <div class="application-task-content">
                                             <h4 class="bwjk">Loading</h4>
@@ -285,7 +334,7 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                         class="feature-cards5 d-flex justify-content-between border-0 radius-xl bg-white p-25">
                                     <div class="application-task d-flex align-items-center">
                                         <div class="application-task-icon wh-60 bg-primary content-center">
-                                            <img class="svg" src="img/svg/feature-cards9.svg" alt="">
+                                            <img class="svg" src="../img/svg/feature-cards9.svg" alt="">
                                         </div>
                                         <div class="application-task-content">
                                             <h4><?= $nums3 ?></h4>
@@ -300,22 +349,17 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                         <div class="dropdown-default dropdown-bottomLeft dropdown-menu-right dropdown-menu"
                                              x-placement="top-end"
                                              style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-96px, -137px, 0px);">
-                                            <a class="dropdown-item" href="#">view</a>
-                                            <a class="dropdown-item" href="#">edit</a>
-                                            <a class="dropdown-item" href="#">delete</a>
+                                            <a class="dropdown-item" href="fwq_list.php">查看服务器</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 m-bottom-30">
                 <div class="device-chart-box">
-
                     <div class="card broder-0">
                         <div class="card-header">
                             <h6>在线状态</h6>
@@ -331,13 +375,9 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                                 <span><?= $nums2 ?></span>总人数
                                             </p>
                                         </div>
-
-
                                         <div>
-                                            <canvas id="chartDoughnut2"></canvas>
+                                            <canvas id="onlineChart"></canvas>
                                         </div>
-
-
                                     </div>
                                     <div class="session-wrap">
                                         <div class="session-single">
@@ -345,50 +385,46 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
                                                 <span class="label-dot dot-success"></span>
                                                 TCP
                                             </div>
-                                            <strong>0</strong>
-                                            <sub>0%</sub>
+                                            <strong><?= $tcpOnlineNum ?></strong>
+                                            <sub><?= round($tcpOnlineNum / $nums2 * 100, 0) ?>%</sub>
                                         </div>
                                         <div class="session-single">
                                             <div class="chart-label">
                                                 <span class="label-dot dot-info"></span>
                                                 UDP
                                             </div>
-                                            <strong>0</strong>
-                                            <sub>0%</sub>
+                                            <strong><?= $udpOnlineNum ?></strong>
+                                            <sub><?= round($udpOnlineNum / $nums2 * 100, 0) ?>%</sub>
                                         </div>
-
                                     </div>
                                 </div>
-
-
                             </div>
                             <!-- ends: .session-wrap -->
                         </div>
                         <!-- ends: .card-body -->
                     </div>
-
                 </div>
             </div>
             <div class="col-md-4 mb-25">
-
                 <div class="card revenueChartTwo broder-0">
                     <div class="card-header">
                         <h6>系统状态</h6>
-                        <div class="card-extra">
-                            <div class="dropdown dropleft">
-                                <a href="#" role="button" id="revenue4" data-toggle="dropdown"
-                                   aria-haspopup="true" aria-expanded="false">
-                                    <span data-feather="more-horizontal"></span>
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="revenue4">
-                                    <a class="dropdown-item" href="#">待添加</a>
-                                    <a class="dropdown-item" href="#">待添加</a>
-                                    <a class="dropdown-item" href="#">待添加</a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <!-- ends: .card-header -->
+                    <?php
+                    //CPU使用率
+                    exec("top -bn1 | grep Cpu", $cpuinfo);
+                    preg_match('/\s*([0-9\.]*)\s*id/is', $cpuinfo[0], $cpuinfo_free);
+                    $cpu_usage = 100 - (float)$cpuinfo_free[1];
+                    //内存使用率
+                    $free = shell_exec('free');
+                    $free = (string)trim($free);
+                    $free_arr = explode("\n", $free);
+                    $mem = explode(" ", $free_arr[1]);
+                    $mem = array_filter($mem);
+                    $mem = array_merge($mem);
+                    $memory_usage = round($mem[2] / $mem[1] * 100, 2);
+                    ?>
                     <div class="card-body px-sm-50 pb-sm-50 pt-sm-45 px-30 pb-30 pt-25 mb-sm-30">
                         <div class="d-flex justify-content-center">
                             <div class="">
@@ -404,38 +440,21 @@ $nums3 = db("auth_fwq")->where()->getnums(); //在线服务器
 
                                     </div>
                                     <div class="total-count">
-                                        <span>22</span>%
+                                        <span><?= round(($cpu_usage + $memory_usage) / 2, 0) ?></span>%
                                         <div class="total-count__text">
                                             平均负荷
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                         <div class="sales-target d-flex justify-content-between">
                             <div class="sales-target__single">
-                                <?php
-                                exec("top -bn1 | grep Cpu", $cpuinfo);
-                                //99.2 id
-                                preg_match('/\s*([0-9\.]*)\s*id/is', $cpuinfo[0], $cpuinfo_free);
-                                $lyl = 100 - (float)$cpuinfo_free[1];
-                                ?>
-                                <h3 class="text-success"><?= $lyl ?>%</h3>
+                                <h3 class="text-success"><?= $cpu_usage ?>%</h3>
                                 <span class="fs-14 color-gray">CPU使用率</span>
                             </div>
                             <!-- ends: .cashflow-display__single -->
-                            <div class="sales-target__single"><h3><?php
-                                    //内存使用率
-                                    $free = shell_exec('free');
-                                    $free = (string)trim($free);
-                                    $free_arr = explode("\n", $free);
-                                    $mem = explode(" ", $free_arr[1]);
-                                    $mem = array_filter($mem);
-                                    $mem = array_merge($mem);
-                                    $memory_usage = round($mem[2] / $mem[1] * 100, 2);
-                                    echo $memory_usage . '%';
-                                    ?></h3>
+                            <div class="sales-target__single"><h3><?= $memory_usage ?>%</h3>
                                 <span class="fs-14 color-gray">内存使用率</span>
                             </div>
                             <!-- ends: .cashflow-display__single -->
@@ -543,9 +562,83 @@ include "footer.php";
 ?>
 
 <script>
+    chartjsLineChartForcast(
+        "#efUserChart",
+        (label = "有效用户图表"),
+        (startGradient = "#5F63F212"),
+        (endGradient = "#5F63F202"),
+        (bColor = "#5F63F2"),
+        (data = <?=json_encode($efUserArr)?>)
+    );
+    chartjsLineChartForcast(
+        "#dailiChart",
+        (label = "代理图表"),
+        (startGradient = "#20C99712"),
+        (endGradient = "#20C99703"),
+        (bColor = "#20C997"),
+        (data = <?=json_encode($dailiArr)?>)
+    );
+    chartjsLineChartForcast(
+        "#monthFlowChart",
+        (label = "月总流量图表"),
+        (startGradient = "#5F63F212"),
+        (endGradient = "#5F63F202"),
+        (bColor = "#5F63F2"),
+        (data = <?=json_encode($flowDaySumArr)?>)
+    );
+    chartjsLineChartForcast(
+        "#moneyChart",
+        (label = "总收入图表"),
+        (startGradient = "#5F63F212"),
+        (endGradient = "#5F63F202"),
+        (bColor = "#5F63F2"),
+        (data = <?=json_encode($moneyDayArr)?>)
+    );
+    function doHandleMonth(month) {
+        var m = month;
+        if (month.toString().length == 1) {
+            m = "0" + month;
+        }
+        return m;
+    }
+    function getDay(day) {
+        var today = new Date();
+        var targetday_milliseconds = today.getTime() + 1000 * 60 * 60 * 24 * day;
+        today.setTime(targetday_milliseconds); //注意，这行是关键代码
+        var tMonth = today.getMonth();
+        var tDate = today.getDate();
+        tMonth = doHandleMonth(tMonth + 1);
+        tDate = doHandleMonth(tDate);
+        return tMonth + "-" + tDate;
+    }
+    chartjsLineChartFourFlow(
+        "twoWeeksFlowChart",
+        "#FA8B0C",
+        "95",
+        (data = <?=json_encode($flowDayArr)?>),
+        (data = <?=json_encode($flowDayArr)?>),
+        labels = [
+            getDay(-11),
+            getDay(-10),
+            getDay(-9),
+            getDay(-8),
+            getDay(-7),
+            getDay(-6),
+            getDay(-5),
+            getDay(-4),
+            getDay(-3),
+            getDay(-2),
+            getDay(-1),
+            getDay(0)
+        ]
+    );
+    chartjsDoughnut(
+        "onlineChart",
+        "150",
+        (data = [<?= $tcpOnlineNum ?>, <?= $udpOnlineNum ?>])
+    );
     $(function () {
         $.post("rateJson.php?act=bwi", {}, function (data) {
-            console.log(data)
             $(".bwjk").html(data);
         });
         setTimeout(function () {
@@ -553,35 +646,5 @@ include "footer.php";
                 $(".bwjk").html(data);
             });
         }, 100000);
-    });
-    AmCharts.ready(function () {
-        $.post("rateJson.php?", {}, function (json) {
-            var chart = new AmCharts.AmSerialChart();
-            chart.dataProvider = json;
-            chart.categoryField = "name";
-            chart.angle = 30;
-            chart.depth3D = 20;
-            //标题
-            chart.addTitle("15天流量趋势(单位GB)", 15);
-            var graph = new AmCharts.AmGraph();
-            chart.addGraph(graph);
-            graph.valueField = "value";
-            //背景颜色透明度
-            graph.fillAlphas = 0.3;
-            //类型
-            graph.type = "line";
-            //圆角
-            graph.bullet = "round";
-            //线颜色
-            graph.lineColor = "#328cc9";
-            //提示信息
-            graph.balloonText = "[[value]] G";
-            var categoryAxis = chart.categoryAxis;
-            categoryAxis.autoGridCount = false;
-            categoryAxis.gridCount = json.length;
-            categoryAxis.gridPosition = "start";
-            chart.write("line");
-        }, "JSON");
-
     });
 </script>

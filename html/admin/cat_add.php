@@ -6,14 +6,14 @@ if ($_GET['act'] == 'del') {
     $db = db('line_grop');
     if ($db->where(["id" => $_GET["id"]])->delete()) {
         db("line")->where(["type" => $_GET["id"]])->delete();
-        tip_success("删除分类并清空本分类下全部线路成功！", "?");
+        tip_success("删除分类并清空本分类下全部线路成功！", $_SERVER['HTTP_REFERER']);
     } else {
         tip_failed("删除失败", "?");
     }
 } elseif ($_GET['act'] == 'add') {
     $db = db('line_grop');
     if ($db->insert(['name' => $_POST['name'], 'order' => $_POST['order'], 'show' => 1])) {
-        tip_success("新增【" . $_POST['name'] . "】成功！", "?");
+        tip_success("新增【" . $_POST['name'] . "】成功！", $_SERVER['HTTP_REFERER']);
     } else {
         tip_failed("分类新增失败", "?");
     }

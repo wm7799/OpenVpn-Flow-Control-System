@@ -11,17 +11,26 @@ class D
     private $data;
     private $field = " * ";
 
-    public function __construct($table = null)
+    public function __construct($table = null,$remote = false)
     {
         try {
-            if (!self::$pdo) {
+            if ($remote == true){
+                $dsn = 'mysql:host=' . $table["host"] . ';port=' . $table["port"] . ';dbname=' . $table["db"] . ';charset=utf8';
+                self::$pdo = new PDO($dsn, $table["user"], $table["pass"]);
+                self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);//设置异常模式
+            }
+            else{
                 $dsn = 'mysql:host=' . _host_ . ';port=' . _port_ . ';dbname=' . _ov_ . ';charset=utf8';
                 self::$pdo = new PDO($dsn, _user_, _pass_);
                 self::$pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);//设置异常模式
             }
-            if ($table) {
+            if ($remote == false && $table) {
                 $this->table = $table;
+            }
+            elseif ($remote == true) {
+                $this->table = $table["table"];
             }
         } catch (PDOException $e) {
             $this->error($e->getMessage());

@@ -8,27 +8,22 @@ if ($_GET['act'] == 'save') {
         "status" => "success"
     )));
 } elseif ($_GET['act'] == 'data') {
-
     include('system.php');
-
     $tcp_file[0]["file"] = "openvpn_api/user-status-tcp.txt";
     $tcp_file[0]["telnet"] = "7075";
-
     $udp_file[0]["file"] = "openvpn_api/user-status-udp.txt";
     $udp_file[0]["telnet"] = "7079";
-
     $status_file = $_GET["t"] == "udp" ? $udp_file : $tcp_file;
-
     $html = '
-  <table class="table table--default traffic-table">
+  <table class="table mb-0 table-borderless">
                                     <thead>
-                                    <tr>
-                                        <th>用户名</th>
-                                        <th>上传</th>
-                                        <th>下载</th>
-                                        <th>剩余流量(实时)</th>
-                                        <th>IP</th>
-                                        <th>操作</th>
+                                    <tr class="userDatatable-header">
+                                        <th><span class="userDatatable-title">用户名</span></th>
+                                        <th><span class="userDatatable-title">上传</span></th>
+                                        <th><span class="userDatatable-title">下载</span></th>
+                                        <th><span class="userDatatable-title">剩余流量(实时)</span></th>
+                                        <th><span class="userDatatable-title">IP</span></th>
+                                        <th><span class="userDatatable-title float-right">操作</span></th>
                                     </tr>
                                     </thead>
                                     <tbody>';
@@ -47,7 +42,6 @@ if ($_GET['act'] == 'save') {
                 exit;
             }
         }
-
         $context = stream_context_create(array(
             'http' => array(
                 'timeout' => 5 //超时时间，单位为秒
@@ -58,7 +52,6 @@ if ($_GET['act'] == 'save') {
             $num = (int)$num;
             $nums += $num;
             $lines = explode("\n", $str);
-
             for ($i = 3; $i < $num + 3; $i++) {
                 $line = $lines[$i];
                 $arr = explode(",", $line);
@@ -70,16 +63,14 @@ if ($_GET['act'] == 'save') {
                 $value = round($sy / 1024 / 1024, 3);
                 $pre = $sy < 1024 * 1024 * 100 ? '<span class="label label-warning">流量不足</span' : '';
                 $pre = $sy < 0 ? '<span class="label label-danger">流量超额</span' : $pre;
-
                 $username = $arr[0] == "UNDEF" ? "正在登陆...(UNDEF)" : $arr[0];
-
                 $html .= "<tr class=\"line-id-{$arr[0]}\">";
-                $html .= "<td>" . $username . "</td>";
-                $html .= "<td>" . $recv . "MB</td>";
-                $html .= "<td>" . $sent . "MB</td>";
-                $html .= "<td>" . round($value, 3) . "MB&nbsp;" . $pre . "</td>";
-                $html .= "<td>" . $arr[1] . "</td>";
-                $html .= '<td><a class="btn btn-xs btn-success" href="./user_list.php?a=qset&user=' . $arr[0] . '">查看用户</a>&nbsp;<button type="button" class="btn btn-danger btn-xs" onclick="if(!confirm(\'只对本机有效，是否继续\')){return false;}else{outline(\'' . $arr[0] . '\',' . $vo["telnet"] . ')}">强制下线</button></td>';
+                $html .= "<td><div class='userDatatable-content'>" . $username . "</div></td>";
+                $html .= "<td><div class='userDatatable-content'>" . $recv . "MB</div></td>";
+                $html .= "<td><div class='userDatatable-content'>" . $sent . "MB</div></td>";
+                $html .= "<td><div class='userDatatable-content'>" . round($value, 3) . "MB&nbsp;" . $pre . "</div></td>";
+                $html .= "<td><div class='userDatatable-content'>" . $arr[1] . "</div></td>";
+                $html .= '<td><ul class="orderDatatable_actions mb-0 d-flex flex-wrap"><li><a class="view" href="./user_list.php?a=qset&user=' . $arr[0] . '">查看</a></li><li><a class="remove color-danger" href="javascript:void(0);" onclick="if(!confirm(\'只对本机有效，是否继续\')){return false;}else{outline(\'' . $arr[0] . '\',' . $vo["telnet"] . ')}">下线</a></li></ul></td>';
                 $html .= "</tr>";
             }
         }
@@ -89,18 +80,15 @@ if ($_GET['act'] == 'save') {
 </thead>
 </table>";
     die(json_encode(array('status' => "success", 'nums' => $nums, "html" => $html)));
-
 } else {
     $title = '当前在线用户';
     include('head.php');
     include('nav.php');
     ?>
     <div class="contents">
-
         <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-12">
-
                     <div class="breadcrumb-main user-member justify-content-sm-between ">
                         <div class=" d-flex flex-wrap justify-content-center breadcrumb-main__wrapper">
                             <div class="d-flex align-items-center user-member__title justify-content-center mr-sm-25">
@@ -113,25 +101,29 @@ if ($_GET['act'] == 'save') {
             </div>
             <div class="row">
                 <div class="col-12 mt-30">
-
                     <div class="card border-0">
                         <div class="card-header">
-                            <h6><block class="oln"></block> 人在线</h6>
+                            <h6>
+                                <block class="oln"></block>
+                                人在线
+                            </h6>
                             <div class="card-extra">
                                 <ul class="card-tab-links mr-3 nav-tabs nav">
                                     <li>
-                                        <a <?php echo $_GET["t"] == "udp" ? "" : "class='active'" ?> href="javascript:void(0)"
-                                           onclick="window.location.href='online.php?<?php echo $_GET['id'] == "" ? "" : "id=" . $_GET['id']; ?><?php echo $_GET['t'] == "udp" ? "&t=tcp" : "&t=udp" ?>'"
-                                           data-toggle="tab" id="t_channel-today-tab" role="tab"
-                                           area-controls="t_channel-table"
-                                           aria-selected="<?php echo $_GET["t"] == "udp" ? "false" : "true" ?>">TCP</a>
+                                        <a <?php echo $_GET["t"] == "udp" ? "" : "class='active'" ?>
+                                                href="javascript:void(0)"
+                                                onclick="window.location.href='online.php?<?php echo $_GET['id'] == "" ? "" : "id=" . $_GET['id']; ?><?php echo $_GET['t'] == "udp" ? "&t=tcp" : "&t=udp" ?>'"
+                                                data-toggle="tab" id="t_channel-today-tab" role="tab"
+                                                area-controls="t_channel-table"
+                                                aria-selected="<?php echo $_GET["t"] == "udp" ? "false" : "true" ?>">TCP</a>
                                     </li>
                                     <li>
-                                        <a <?php echo $_GET["t"] == "udp" ? "class='active'" : "" ?> href="javascript:void(0)"
-                                           onclick="window.location.href='online.php?<?php echo $_GET['id'] == "" ? "" : "id=" . $_GET['id']; ?><?php echo $_GET['t'] == "udp" ? "&t=tcp" : "&t=udp" ?>'"
-                                           data-toggle="tab" id="t_channel-week-tab" role="tab"
-                                           area-controls="t_channel-table"
-                                           aria-selected="<?php echo $_GET["t"] == "udp" ? "true" : "false" ?>">UDP</a>
+                                        <a <?php echo $_GET["t"] == "udp" ? "class='active'" : "" ?>
+                                                href="javascript:void(0)"
+                                                onclick="window.location.href='online.php?<?php echo $_GET['id'] == "" ? "" : "id=" . $_GET['id']; ?><?php echo $_GET['t'] == "udp" ? "&t=tcp" : "&t=udp" ?>'"
+                                                data-toggle="tab" id="t_channel-week-tab" role="tab"
+                                                area-controls="t_channel-table"
+                                                aria-selected="<?php echo $_GET["t"] == "udp" ? "true" : "false" ?>">UDP</a>
                                     </li>
                                 </ul>
                                 <div class="dropdown dropleft">
@@ -152,7 +144,7 @@ if ($_GET['act'] == 'save') {
                                             $id_str = $res['id'] == "" ? "" : "id=" . $res['id'];
                                             $t_str = $_GET['t'] == "" ? "" : "&t=" . $_GET['t'];
                                             if ($res['id'] == $_GET["id"]) {
-                                                echo '<a class="dropdown-item" href="?' . $id_str . $t_str . '" style="display: flex;align-items: center;justify-content: space-between;"><span class="badge-dot dot-info"></span>' . $res['name'] . '</a>';
+                                                echo '<a class="dropdown-item" href="?' . $id_str . $t_str . '" style="display: flex;align-items: center;justify-content: space-between;">' . $res['name'] . '<span class="badge-dot dot-info"></span></a>';
                                             } else {
                                                 echo '<a class="dropdown-item" href="?' . $id_str . $t_str . '">' . $res['name'] . '</a>';
                                             }
@@ -179,9 +171,7 @@ if ($_GET['act'] == 'save') {
                 </div>
             </div>
         </div>
-
     </div>
-
     <?php
     include("footer.php");
 } ?>

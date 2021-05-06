@@ -10,7 +10,7 @@ if ($do == "getMsg") {
         $json = file_get_contents($cache);
     } else {
         //获取远程服务器的公告
-        $url = 'http://www.pykky.com/gg.tmp';
+        $url = 'http://a.pykky.com/gg.txt';
         if (!file_put_contents($cache, file_get_contents($url)))
             file_put_contents($cache, "[]");
         $json = file_get_contents($cache);
@@ -46,7 +46,7 @@ if ($do == "getMsg") {
         $json = file_get_contents($cache);
     } else {
         //获取远程服务器的公告
-        $url = 'http://www.pykky.com/gg.tmp';
+        $url = 'http://a.pykky.com/gg.txt';
         if (!file_put_contents($cache, file_get_contents($url)))
             file_put_contents($cache, "[]");
         $json = file_get_contents($cache);

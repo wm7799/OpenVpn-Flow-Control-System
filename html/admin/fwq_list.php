@@ -23,6 +23,7 @@ if ($my == 'del') {
             $i++;
         }
         systemi("service iptables save");
+        systemi("systemctl restart iptables.service");
         tip_success("您已成功开启数据库防火墙 并自动应用" . $i . "条规则 康师傅流控全程为您护航", $_SERVER['HTTP_REFERER']);
     } else {
         $rs = db("auth_fwq")->order("id DESC")->select();
@@ -33,6 +34,7 @@ if ($my == 'del') {
         }
         systemi('iptables -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT');
         systemi("service iptables save");
+        systemi("systemctl restart iptables.service");
         tip_success("您已成功关闭数据库防火墙 已失去外网保护", $_SERVER['HTTP_REFERER']);
     }
 } else {
@@ -87,7 +89,7 @@ if ($my == 'del') {
                                 <button type="button" href="?act=bmd&do=off" class="btn btn-danger btn-default btn-squared btn-shadow-danger">关闭</button>
                             <?php } ?>
                         </div>
-                        <script src="assets/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+                        <script src="../assets/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
                         <script>
                             var tz = 0;
                             function getOnLine(url, file) {
