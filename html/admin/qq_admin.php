@@ -7,7 +7,6 @@ if ($_GET['act'] == 'update') {
     $m->type("cfg_app")->update("reg_type", $_POST["reg_type"]);
     $m->type("cfg_app")->update("connect_unlock", $_POST["connect_unlock"]);
     $m->type("cfg_app")->update("content", $_POST["content"]);
-    $m->type("cfg_app")->update("max_limit", $_POST["max_limit"]);
     $m->type("cfg_app")->update("SMS_T", $_POST["SMS_T"]);
     $m->type("cfg_app")->update("SMS_L", $_POST["SMS_L"]);
     $m->type("cfg_app")->update("SMS_I", $_POST["SMS_I"]);
@@ -23,7 +22,6 @@ if ($_GET['act'] == 'update') {
     $info["reg_type"] = $m->type("cfg_app")->getValue("reg_type");
     $info["connect_unlock"] = $m->type("cfg_app")->getValue("connect_unlock", 0);
     $info["content"] = $m->type("cfg_app")->getValue("content");
-    $info["max_limit"] = $m->type("cfg_app")->getValue("max_limit", 100);
     $info["SMS_T"] = $m->type("cfg_app")->getValue("SMS_T", 3);
     $info["SMS_L"] = $m->type("cfg_app")->getValue("SMS_L", 100);
     $info["SMS_I"] = $m->type("cfg_app")->getValue("SMS_I", 0);
@@ -127,11 +125,6 @@ if ($_GET['act'] == 'update') {
                                         <label for="firstname" class="color-dark fs-14 fw-500 align-center">客服页面内容（支持HTML）</label>
                                             <textarea class="form-control" name="content" rows="10"
                                                       id="myEditor"><?php echo $info['content'] ?></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="firstname" class="color-dark fs-14 fw-500 align-center">请设置无限套餐封底(流量达到这个数值自动识别为无限/单位：GB)</label>
-                                        <input class="form-control" name="max_limit"
-                                                                      value="<?php echo $info['max_limit'] ?>">
                                     </div>
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-block">提交数据</button>

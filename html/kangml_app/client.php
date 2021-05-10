@@ -25,6 +25,34 @@ function check_user()
 }
 
 switch ($action) {
+    case 'help1':
+        $user_info = check_user();
+        $title = '个人中心';
+        include("api_head_new.php");
+        include("mode/all.php");
+        include("api_footer.php");
+        break;
+    case 'user_info':
+        $user_info = check_user();
+        $title = '详细信息';
+        include("api_head_new.php");
+        include("mode/user_info.php");
+        include("api_footer.php");
+        break;
+    case 'llog':
+        $user_info = check_user();
+        $title = '使用记录';
+        include("api_head_new.php");
+        include("mode/llog.php");
+        include("api_footer.php");
+        break;
+    case 'top':
+        $user_info = check_user();
+        $title = '流量排行';
+        include("api_head_new.php");
+        include("mode/top.php");
+        include("api_footer.php");
+        break;
     case 'success_pay':
         $title = '支付成功';
         include("api_head_new.php");
@@ -59,26 +87,53 @@ switch ($action) {
         include("api_footer.php");
         break;
     case 'notice_list':
+        $title = '消息通知';
         include('api_head_new.php');
         //include('list_gg.php');
         $u = $_GET['username'];
         $p = $_GET['password'];
         $db = db('app_gg');
         $list = $db->where(["daili" => DID])->order('id DESC')->select();
-        echo '<div style="margin:10px 10px;">';
-        echo '<div class="alert alert-warning">您可以在这看到最近30条消息通知</div>';
-        echo '</div>';
+        echo '<div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-lg-12">
+<div class="card card-default card-md mb-4">
+                                <div class="card-header py-20">
+                                    <h6>公告/消息通知</h6>
+                                </div>
+                                <div class="card-body">';
         if ($list) {
-            echo '<ul class="list-group">';
             foreach ($list as $v) {
-                echo '<li class="list-group-item"><a href="">' . $v['name'] . '</a></li>
-				';
+                echo '<div class="atbd-collapse atbd-collapse-borderless">
+                                        <div class="atbd-collapse-item">
+                                            <div class="atbd-collapse-item__header">
+                                                <a href="#" class="item-link" data-toggle="collapse" data-target="#collapse-body-b-3" aria-expanded="true" aria-controls="collapse-body-b-3">
+                                                    <i class="la la-angle-right"></i>
+                                                    <h6>' .$v['name'].'</h6>
+                                                </a>
+                                            </div>
+                                            <div id="collapse-body-b-3" class="collapse atbd-collapse-item__body">
+                                                <div class="collapse-body-text">
+                                                    <p>
+                                                        '.$v['content'].'
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!-- inject:js-->
+<script src="../../assets/vendor_assets/js/jquery/jquery-3.5.1.min.js"></script>
+<script src="../../assets/vendor_assets/js/jquery/jquery-ui.js"></script>
+<script src="../../assets/vendor_assets/js/bootstrap/popper.js"></script>
+<script src="../../assets/vendor_assets/js/bootstrap/bootstrap.min.js"></script>
+<script src="../../assets/theme_assets/js/main.js"></script>
+<!-- endinject-->';
             }
             echo '</ul>';
         } else {
             echo '消息已经删除或者不存在！';
         }
-
+        echo "</div></div></div></div>";
         include("api_footer.php");
         break;
     case 'notice':
@@ -102,10 +157,10 @@ switch ($action) {
             $download = printmb($u[_isent_]);
             $_sy = $ud->getDatadays();
             $s = $u[_maxll_] - ($u[_irecv_] + $u[_isent_]);
-            $_all = $u[_maxll_] >= _MAX_LIMIT_ * 1024 * 1024 * 1024 ? "NO_LIMIT" : $s;
+            $_all = $u[_maxll_] >= _MAX_LIMIT_ * 1024 * 1024 * 1024 ? "NO_LIMIT" : (int)($s / 1024);
             die(json_encode([
                 'status' => 'success',
-                'bl' => $_all,
+                'bl' => "NO_LIMIT",
                 'sy' => $_sy . "天"
             ]));
         } else {

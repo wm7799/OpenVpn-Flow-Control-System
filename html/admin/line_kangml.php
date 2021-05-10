@@ -1,8 +1,7 @@
 <?php
 $title = '官方线路推送';
-include('head.php');
-include('nav.php');
 if ($_GET['act'] == 'add') {
+    require("system.php");
     $sqlInfoLine = ["host" => "43.226.76.19", "user" => "mysql2104283bc9", "pass" => "06ous0zfYy", "port" => "3306", "db" => "mysql2104283bc9_db", "table" => "line"];
     $kangml_dbLine = dbRemote($sqlInfoLine);
     $lineres = $kangml_dbLine->where(array('id' => $_POST['id']))->find();
@@ -28,6 +27,8 @@ if ($_GET['act'] == 'add') {
         die(json_encode(array("status" => 'error')));
     }
 } else {
+    include('head.php');
+    include('nav.php');
     $sqlInfoLine = ["host" => "43.226.76.19", "user" => "mysql2104283bc9", "pass" => "06ous0zfYy", "port" => "3306", "db" => "mysql2104283bc9_db", "table" => "line"];
     $kangml_dbLine = dbRemote($sqlInfoLine);
     $sqlInfoLineGroup = ["host" => "43.226.76.19", "user" => "mysql2104283bc9", "pass" => "06ous0zfYy", "port" => "3306", "db" => "mysql2104283bc9_db", "table" => "line_grop"];
@@ -203,6 +204,7 @@ include('footer.php');
         };
         $.post(url, data, function (data) {
             if (data.status == "success") {
+                showTongZhi('check-circle', false, "成功", "此线路已添加成功，默认为禁用。");
             } else {
                 alert("添加失败");
             }
