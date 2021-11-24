@@ -277,8 +277,11 @@ class D
         try {
             $stm = self::$pdo->prepare($sql);
             $stm->setFetchMode(PDO::FETCH_ASSOC);
-            foreach ($data as $key => $value) {
+            if (!empty($data))
+            {
+                foreach ($data as $key => $value) {
                 $stm->bindValue($key, $value);
+                }
             }
             $stm->execute();
             if ($one == 0) {
