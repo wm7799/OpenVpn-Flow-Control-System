@@ -1,2 +1,3 @@
 # OpenVpn-Flow-Control-System
-with PHP
+> 康师傅流控4.1纪念版PHP源码，使用PHP7.3制作，仅供交流学习与研究。<br>
+谢谢兄弟们一直以来的支持，江湖上有缘再见！
